@@ -1,61 +1,60 @@
 // Farmru Brand Colors
 
-const tintColorLight = '#007BFF';
-const tintColorDark = '#4CAF50';
+// Exact colors extracted from the Farmru logo
+const TINT_GREEN = '#62A855'; // The leaf green from the sprout
+const SOIL_BROWN = '#C19A5C'; // The earthy brown from the center
+const NAVY_BLUE = '#203A5A'; // The blue from the border dots
 
 export const Colors = {
   light: {
-    text: '#1A237E', // Dark Navy / Ink
-    background: '#FFFFFF',
-    tint: tintColorLight,
-    icon: '#687076',
-    tabIconDefault: '#687076',
-    tabIconSelected: tintColorLight,
-    
-    // Core Brand Identity
-    primary: '#007BFF',
-    primaryDark: '#0056b3',
-    secondary: '#17A2B8',
-    
-    // Agriculture Natural Tones
-    leafGreen: '#4CAF50',
-    successGreen: '#28A745',
-    soilBrown: '#B08B4E',
-    
-    // Semantic
-    success: '#28A745',
-    warning: '#FFC107',
-    danger: '#DC3545',
-    
-    // Grays / Borders
+    // Core Backgrounds
+    background: '#F9FAFB', // Modern off-white
     card: '#FFFFFF',
-    border: 'rgba(26, 35, 126, 0.1)',
-    muted: '#737373',
-    wash: '#F8F9FA'
+    
+    // Text
+    text: NAVY_BLUE,
+    muted: '#6B7280',
+    
+    // Core Brand Colors (extracted from logo)
+    primary: TINT_GREEN,
+    primaryDark: '#4A8C3E',
+    secondary: SOIL_BROWN,
+    navy: NAVY_BLUE,
+    
+    // UI Elements
+    tint: TINT_GREEN,
+    icon: '#6B7280',
+    tabIconDefault: '#9CA3AF',
+    tabIconSelected: TINT_GREEN,
+    border: 'rgba(32, 58, 90, 0.1)',
+    wash: '#F3F4F6',
+    
+    // Semantics
+    success: '#10B981',
+    warning: '#F59E0B',
+    danger: '#EF4444',
   },
   dark: {
-    text: '#ECEDEE',
-    background: '#121212', // Pure dark for mobile OLED, or very dark navy
-    tint: tintColorDark,
-    icon: '#9BA1A6',
-    tabIconDefault: '#9BA1A6',
-    tabIconSelected: tintColorDark,
+    background: '#111827',
+    card: '#1F2937',
     
-    primary: '#4CAF50', // Use green for primary active states in dark mode to reduce glare
-    primaryDark: '#388E3C',
-    secondary: '#17A2B8',
+    text: '#F9FAFB',
+    muted: '#9CA3AF',
     
-    leafGreen: '#4CAF50',
-    successGreen: '#28A745',
-    soilBrown: '#B08B4E',
+    primary: TINT_GREEN,
+    primaryDark: '#4A8C3E',
+    secondary: SOIL_BROWN,
+    navy: '#374151', // Lighter navy for dark mode cards
     
-    success: '#28A745',
-    warning: '#FFC107',
-    danger: '#DC3545',
-    
-    card: '#1E1E1E',
+    tint: TINT_GREEN,
+    icon: '#9CA3AF',
+    tabIconDefault: '#6B7280',
+    tabIconSelected: TINT_GREEN,
     border: 'rgba(255,255,255,0.1)',
-    muted: '#A3A3A3',
-    wash: '#1A1A1A'
+    wash: '#111827',
+
+    success: '#10B981',
+    warning: '#F59E0B',
+    danger: '#EF4444',
   },
 };
