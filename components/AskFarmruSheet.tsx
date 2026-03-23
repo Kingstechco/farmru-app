@@ -43,7 +43,7 @@ const buildGreeting = () => {
   const heavyRain = WEATHER_FORECAST.find(d => d.rainMm >= 20);
   if (topAdvisory?.urgency === 'critical' && heavyRain)
     return `Hello Tsedzu! ⚠️ Critical alert — ${heavyRain.rainMm}mm expected on ${heavyRain.day}. I have ${weatherAdvisories.length} advisories ready. How can I help?`;
-  return `Hello Tsedzu! I am Ask Farmru. I've analysed this week's weather and have ${weatherAdvisories.length} predictive advisories ready.`;
+  return `Hello Tsedzu! I am Farmru. I've analysed this week's weather and have ${weatherAdvisories.length} predictive advisories ready.`;
 };
 
 const buildSuggestions = () => {
@@ -252,7 +252,7 @@ export function AskFarmruSheet({ visible, onClose }: AskFarmruSheetProps) {
                   <MaterialIcons name="eco" size={12} color="#fff" />
                 </LinearGradient>
                 <View style={[styles.bubbleBody, { backgroundColor: theme.isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.05)', borderBottomLeftRadius: 4 }]}>
-                  <Text style={[styles.bubbleText, { color: theme.textSub }]}>Ask Farmru is thinking…</Text>
+                  <Text style={[styles.bubbleText, { color: theme.textSub }]}>Farmru is thinking…</Text>
                 </View>
               </View>
             )}

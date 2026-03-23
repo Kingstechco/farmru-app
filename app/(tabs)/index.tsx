@@ -140,15 +140,37 @@ export default function DashboardScreen() {
             </View>
           </View>
           
-          <TouchableOpacity 
-            style={styles.weatherBadgeContainer} 
-            activeOpacity={0.7} 
-            onPress={() => setIsWeatherOpen(true)}
-          >
-            <BlurView intensity={theme.isDark ? 30 : 60} tint={theme.blurTint} style={StyleSheet.absoluteFill} />
-            <MaterialIcons name="wb-sunny" size={20} color={SOIL_BROWN} />
-            <Text style={styles.weatherText}>24°C</Text>
-          </TouchableOpacity>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+            {/* Notifications Button */}
+            <TouchableOpacity 
+              style={[styles.headerIconButton, { backgroundColor: theme.isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)' }]} 
+              activeOpacity={0.7} 
+              onPress={() => router.push('/notifications')}
+            >
+              <MaterialIcons name="notifications-none" size={24} color={theme.textMain} />
+              <View style={styles.notificationBadge} />
+            </TouchableOpacity>
+
+            {/* Settings Button */}
+            <TouchableOpacity 
+              style={[styles.headerIconButton, { backgroundColor: theme.isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)' }]} 
+              activeOpacity={0.7} 
+              onPress={() => router.push('/settings')}
+            >
+              <MaterialIcons name="settings" size={22} color={theme.textMain} />
+            </TouchableOpacity>
+
+            {/* Weather Badge */}
+            <TouchableOpacity 
+              style={styles.weatherBadgeContainer} 
+              activeOpacity={0.7} 
+              onPress={() => setIsWeatherOpen(true)}
+            >
+              <BlurView intensity={theme.isDark ? 30 : 60} tint={theme.blurTint} style={StyleSheet.absoluteFill} />
+              <MaterialIcons name="wb-sunny" size={20} color={SOIL_BROWN} />
+              <Text style={styles.weatherText}>24°C</Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
         <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
@@ -478,6 +500,24 @@ const getStyles = (theme: ReturnType<typeof useThemeColors>) => StyleSheet.creat
     color: theme.textMain, 
     fontFamily: 'Outfit_700Bold',
     fontSize: 16,
+  },
+  headerIconButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: theme.glassBorder,
+  },
+  notificationBadge: {
+    position: 'absolute',
+    top: 10,
+    right: 12,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#ef4444',
   },
   scrollContent: { 
     padding: 24, 

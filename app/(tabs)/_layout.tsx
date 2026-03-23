@@ -21,14 +21,6 @@ const QUICK_ACTIONS = [
   { key: 'pest'  as const, label: 'Report Pest', sublabel: 'Flag field issue',         icon: 'bug-report', color: '#ef4444' },
 ];
 
-// ─── More menu items ─────────────────────────────────────────
-const MORE_ITEMS = [
-  { label: 'Devices',       icon: 'memory',        color: '#38bdf8', route: '/devices',       badge: 1 },
-  { label: 'Notifications', icon: 'notifications', color: '#f59e0b', route: '/notifications', badge: 3 },
-  { label: 'Settings',      icon: 'settings',      color: '#4ade80', route: '/settings',      badge: 0 },
-  { label: 'Help',          icon: 'help-outline',  color: '#a78bfa', route: '/settings',      badge: 0 },
-];
-
 // ─── Floating Ask Farmru pill button (Circle → Pill Morph) ──
 function FloatingAIButton({ onPress, sheetOpen }: { onPress: () => void; sheetOpen: boolean }) {
   const theme = useThemeColors();
@@ -147,35 +139,12 @@ function QuickLogTabButton({ onPress }: { onPress: () => void; children?: React.
   );
 }
 
-// ─── Custom More button ───────────────────────────────────────
-function MoreTabButton({ onPress }: { onPress: () => void; children?: React.ReactNode }) {
-  const theme = useThemeColors();
-  const inactiveColor = theme.isDark ? 'rgba(255,255,255,0.45)' : 'rgba(80,70,60,0.55)';
-  const totalBadge = MORE_ITEMS.reduce((s, m) => s + m.badge, 0);
-  return (
-    <Pressable onPress={onPress} style={styles.centreSlot}>
-      <View style={{ alignItems: 'center', gap: 4 }}>
-        <View style={{ position: 'relative' }}>
-          <MaterialIcons name="apps" size={22} color={inactiveColor} />
-          {totalBadge > 0 && (
-            <View style={{ position: 'absolute', top: -4, right: -6, backgroundColor: '#ef4444', borderRadius: 7, minWidth: 14, height: 14, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 2 }}>
-              <Text style={{ fontFamily: 'Outfit_700Bold', fontSize: 8, color: '#fff' }}>{totalBadge}</Text>
-            </View>
-          )}
-        </View>
-        <Text style={{ fontFamily: 'Outfit_500Medium', fontSize: 11, color: inactiveColor }}>More</Text>
-      </View>
-    </Pressable>
-  );
-}
-
 // ─── Main layout ─────────────────────────────────────────────
 export default function TabLayout() {
   const theme = useThemeColors();
   const router = useRouter();
 
   const [quickLogOpen, setQuickLogOpen] = React.useState(false);
-  const [moreOpen, setMoreOpen]         = React.useState(false);
   const [soilVisible, setSoilVisible]   = React.useState(false);
   const [askOpen, setAskOpen]           = React.useState(false);
 
@@ -183,11 +152,6 @@ export default function TabLayout() {
   const qlSlide   = useRef(new Animated.Value(320)).current;
   const qlOverlay = useRef(new Animated.Value(0)).current;
   const qlItems   = useRef(QUICK_ACTIONS.map(() => new Animated.Value(0))).current;
-
-  // More tray animations
-  const moreSlide   = useRef(new Animated.Value(280)).current;
-  const moreOverlay = useRef(new Animated.Value(0)).current;
-  const moreItems   = useRef(MORE_ITEMS.map(() => new Animated.Value(0))).current;
 
   const activeColor   = Colors.light.secondary;
   const inactiveColor = theme.isDark ? 'rgba(255,255,255,0.45)' : 'rgba(80,70,60,0.55)';
@@ -210,23 +174,6 @@ export default function TabLayout() {
     ]).start(() => setQuickLogOpen(false));
   };
 
-  const openMore = () => {
-    setMoreOpen(true);
-    if (Platform.OS !== 'web') Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    Animated.parallel([
-      Animated.spring(moreSlide, { toValue: 0, useNativeDriver: true, tension: 68, friction: 13 }),
-      Animated.timing(moreOverlay, { toValue: 1, duration: 180, useNativeDriver: true }),
-      ...moreItems.map((a, i) => Animated.spring(a, { toValue: 1, useNativeDriver: true, tension: 60, friction: 11, delay: i * 50 })),
-    ]).start();
-  };
-  const closeMore = () => {
-    Animated.parallel([
-      Animated.timing(moreSlide, { toValue: 280, duration: 200, useNativeDriver: true }),
-      Animated.timing(moreOverlay, { toValue: 0, duration: 160, useNativeDriver: true }),
-      ...moreItems.map(a => Animated.timing(a, { toValue: 0, duration: 110, useNativeDriver: true })),
-    ]).start(() => setMoreOpen(false));
-  };
-
   const handleQL = (key: typeof QUICK_ACTIONS[0]['key']) => {
     if (Platform.OS !== 'web') Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     if (key === 'water') {
@@ -241,11 +188,6 @@ export default function TabLayout() {
       store.setHealthOverride('Warning');
       closeQL();
     }
-  };
-
-  const handleMoreNav = (route: string) => {
-    closeMore();
-    setTimeout(() => router.push(route as any), 220);
   };
 
   return (
@@ -309,7 +251,7 @@ export default function TabLayout() {
             tabBarButton: () => <QuickLogTabButton onPress={openQL} />,
           }}
         />
-        {/* Slot 4 — Analytics (promoted from More tray) */}
+        {/* Slot 4 — Analytics */}
         <Tabs.Screen
           name="analytics"
           options={{
@@ -317,20 +259,6 @@ export default function TabLayout() {
             tabBarIcon: ({ color }) => <MaterialIcons name="query-stats" size={22} color={color} />,
           }}
         />
-        {/* Slot 5 — More tray */}
-        <Tabs.Screen
-          name="devices"
-          options={{
-            title: '',
-            tabBarLabel: () => null,
-            tabBarIcon:  () => null,
-            tabBarButton: () => <MoreTabButton onPress={openMore} />,
-          }}
-        />
-
-        {/* Hidden routable tabs */}
-        <Tabs.Screen name="notifications" options={{ href: null }} />
-        <Tabs.Screen name="settings"      options={{ href: null }} />
       </Tabs>
 
       {/* ════════════ Floating AI Assistant button ════════════ */}
@@ -385,63 +313,6 @@ export default function TabLayout() {
             <TouchableOpacity onPress={closeQL} style={styles.cancelBtn} activeOpacity={0.7}>
               <MaterialIcons name="close" size={16} color={theme.textDim} />
               <Text style={[styles.cancelText, { color: theme.textDim }]}>Cancel</Text>
-            </TouchableOpacity>
-          </Animated.View>
-        </Modal>
-      )}
-
-      {/* ════════════ More tray ════════════ */}
-      {moreOpen && (
-        <Modal visible transparent animationType="none" onRequestClose={closeMore}>
-          <Animated.View style={[StyleSheet.absoluteFill, { opacity: moreOverlay }]}>
-            <Pressable style={StyleSheet.absoluteFill} onPress={closeMore}>
-              <BlurView intensity={theme.isDark ? 35 : 20} tint="dark" style={StyleSheet.absoluteFill} />
-            </Pressable>
-          </Animated.View>
-          <Animated.View style={[styles.tray, {
-            backgroundColor: theme.isDark ? 'rgba(14,22,34,0.97)' : 'rgba(252,248,244,0.97)',
-            borderColor: theme.isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.06)',
-            transform: [{ translateY: moreSlide }],
-          }]}>
-            <BlurView intensity={theme.isDark ? 90 : 95} tint={theme.isDark ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />
-            <View style={[styles.handle, { backgroundColor: theme.isDark ? 'rgba(255,255,255,0.18)' : 'rgba(0,0,0,0.12)' }]} />
-            <View style={styles.trayHeader}>
-              <Text style={[styles.trayTitle, { color: theme.textMain }]}>More</Text>
-              <Text style={[styles.traySub, { color: theme.textSub }]}>Tools, alerts & settings</Text>
-            </View>
-            <View style={styles.moreGrid}>
-              {MORE_ITEMS.map((item, i) => {
-                const sc = moreItems[i].interpolate({ inputRange: [0, 1], outputRange: [0.8, 1] });
-                return (
-                  <Animated.View key={item.label} style={[styles.moreCell, { opacity: moreItems[i], transform: [{ scale: sc }] }]}>
-                    <Pressable
-                      onPress={() => handleMoreNav(item.route)}
-                      style={({ pressed }) => ({
-                        flex: 1, borderRadius: 20, borderWidth: 1.5,
-                        borderColor: item.color + '40',
-                        backgroundColor: pressed ? item.color + '22' : item.color + '10',
-                        padding: 18, alignItems: 'flex-start', gap: 10,
-                        transform: [{ scale: pressed ? 0.95 : 1 }],
-                      })}
-                    >
-                      <View style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: item.color + '20', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
-                        <MaterialIcons name={item.icon as any} size={24} color={item.color} />
-                        {item.badge > 0 && (
-                          <View style={{ position: 'absolute', top: -3, right: -3, backgroundColor: '#ef4444', borderRadius: 8, minWidth: 16, height: 16, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 3 }}>
-                            <Text style={{ fontFamily: 'Outfit_700Bold', fontSize: 9, color: '#fff' }}>{item.badge}</Text>
-                          </View>
-                        )}
-                      </View>
-                      <Text style={{ fontFamily: 'Outfit_700Bold', fontSize: 15, color: theme.textMain }}>{item.label}</Text>
-                    </Pressable>
-                  </Animated.View>
-                );
-              })}
-            </View>
-            <View style={[styles.divider, { backgroundColor: theme.glassBorder }]} />
-            <TouchableOpacity onPress={closeMore} style={styles.cancelBtn} activeOpacity={0.7}>
-              <MaterialIcons name="close" size={16} color={theme.textDim} />
-              <Text style={[styles.cancelText, { color: theme.textDim }]}>Close</Text>
             </TouchableOpacity>
           </Animated.View>
         </Modal>
@@ -528,8 +399,6 @@ const styles = StyleSheet.create({
   actionIcon: { width: 58, height: 58, borderRadius: 29, alignItems: 'center', justifyContent: 'center' },
   actionLabel: { fontFamily: 'Outfit_700Bold', fontSize: 13, textAlign: 'center' },
   actionSub: { fontFamily: 'Outfit_400Regular', fontSize: 10, textAlign: 'center' },
-  moreGrid: { flexDirection: 'row', flexWrap: 'wrap', paddingHorizontal: 16, gap: 12, marginBottom: 20 },
-  moreCell: { width: '47%' },
   divider: { height: 1, marginHorizontal: 24, marginBottom: 10 },
   cancelBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 10 },
   cancelText: { fontFamily: 'Outfit_600SemiBold', fontSize: 14 },

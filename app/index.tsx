@@ -269,10 +269,12 @@ const getStyles = (theme: ReturnType<typeof useThemeColors>) => StyleSheet.creat
     shadowOpacity: theme.isDark ? 0.4 : 0.2,
     shadowRadius: 16,
     elevation: 8,
+    borderRadius: 30,
   },
   loginButton: {
     height: 60,
     borderRadius: 30, // Fully rounded pill button
+    overflow: 'hidden',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
