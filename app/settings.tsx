@@ -34,7 +34,7 @@ export default function SettingsScreen() {
       title: 'Tools & Data',
       rows: [
         { icon: 'query-stats', color: '#a78bfa', label: 'Analytics', sublabel: 'Charts, trends & insights', type: 'nav', route: '/analytics' },
-        { icon: 'memory',      color: '#38bdf8', label: 'Device Center', sublabel: 'Manage sensors & nodes', type: 'nav', route: '/devices' },
+        { icon: 'router',      color: '#38bdf8', label: 'Devices',   sublabel: 'Manage sensors & nodes', type: 'nav', route: '/devices' },
       ],
     },
     {
@@ -43,7 +43,7 @@ export default function SettingsScreen() {
         { icon: 'warning',       color: '#ef4444', label: 'Farm Alerts',      sublabel: 'Critical readings & urgent actions', type: 'toggle', value: notifAlerts,  onToggle: setNotifAlerts },
         { icon: 'grain',         color: '#38bdf8', label: 'Weather Events',   sublabel: 'Rain, wind & temperature alerts',    type: 'toggle', value: notifWeather, onToggle: setNotifWeather },
         { icon: 'auto-awesome',  color: '#a78bfa', label: 'AI Advisories',    sublabel: 'Recommendations from Farmru AI',     type: 'toggle', value: notifAI,      onToggle: setNotifAI },
-        { icon: 'memory',        color: '#4ade80', label: 'Device Alerts',    sublabel: 'Offline, low battery, signal loss',  type: 'toggle', value: notifDevice,  onToggle: setNotifDevice },
+        { icon: 'router',        color: '#4ade80', label: 'Device Alerts',    sublabel: 'Offline, low battery, signal loss',  type: 'toggle', value: notifDevice,  onToggle: setNotifDevice },
       ],
     },
     {
