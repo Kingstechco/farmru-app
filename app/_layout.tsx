@@ -30,13 +30,25 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="menu" options={{ presentation: 'modal', headerShown: false, animation: 'slide_from_bottom' }} />
-        <Stack.Screen name="filter-modal" options={{ presentation: 'transparentModal', headerShown: false, animation: 'fade' }} />
-        <Stack.Screen name="analytics" options={{ headerShown: false }} />
-        <Stack.Screen name="devices" options={{ headerShown: false }} />
+      <Stack
+        screenOptions={{
+          headerShown: false,
+          animation: 'ios_from_right',
+          animationDuration: 280,
+          gestureEnabled: true,
+          gestureDirection: 'horizontal',
+          contentStyle: { backgroundColor: 'transparent' },
+        }}
+      >
+        <Stack.Screen name="index" options={{ animation: 'fade' }} />
+        <Stack.Screen name="(tabs)" options={{ animation: 'fade', animationDuration: 220 }} />
+        <Stack.Screen name="menu" options={{ presentation: 'modal', animation: 'slide_from_bottom', animationDuration: 320 }} />
+        <Stack.Screen name="filter-modal" options={{ presentation: 'transparentModal', animation: 'fade', animationDuration: 200 }} />
+        <Stack.Screen name="analytics" options={{ animation: 'ios_from_right', animationDuration: 280 }} />
+        <Stack.Screen name="devices" options={{ animation: 'ios_from_right', animationDuration: 280 }} />
+        {/* Secondary pages reached via router.push from More tray */}
+        <Stack.Screen name="(tabs)/notifications" options={{ animation: 'slide_from_bottom', presentation: 'modal', animationDuration: 320 }} />
+        <Stack.Screen name="(tabs)/settings" options={{ animation: 'slide_from_bottom', presentation: 'modal', animationDuration: 320 }} />
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>

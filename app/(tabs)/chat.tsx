@@ -1,29 +1,98 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, Keyboard, Animated } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, Keyboard, Animated, Pressable } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AppIcon as MaterialIcons } from '@/components/ui/AppIcon';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import { useThemeColors } from '@/hooks/useThemeColors';
+import { weatherAdvisories, WEATHER_FORECAST } from '@/utils/weatherEngine';
 
 type Message = {
   id: string;
   text: string;
   isUser: boolean;
+  timestamp?: string;
 };
 
-const SUGGESTIONS = [
-  "When should I water the maize?",
-  "Show NPK chart",
-  "Any pests detected?",
-  "Optimal fertilizer?"
+// Topic categories with domain-specific suggestion pools
+const TOPIC_CATEGORIES = [
+  { id: 'weather', label: '🌧 Weather', color: '#38bdf8', suggestions: [
+    "What should I do before Thursday's heavy rain?",
+    "Will this week's rain affect my spray schedule?",
+    "How much rain is expected and when?",
+  ]},
+  { id: 'soil', label: '🌱 Soil', color: '#c1a06a', suggestions: [
+    "What is the current NPK status of my fields?",
+    "How do I improve phosphorus levels quickly?",
+    "When should I re-test soil pH?",
+  ]},
+  { id: 'crops', label: '🌾 Crops', color: '#4ade80', suggestions: [
+    "When is the optimal harvest window for potatoes?",
+    "How do I reduce moisture stress on tomatoes?",
+    "What stage is my maize crop at?",
+  ]},
+  { id: 'pests', label: '🦟 Pests', color: '#f87171', suggestions: [
+    "Any disease risk this week given humidity levels?",
+    "How do I prevent fungal outbreaks before rain?",
+    "When is the best window for pesticide application?",
+  ]},
+  { id: 'report', label: '📊 AI Report', color: '#a78bfa', suggestions: [
+    "Generate a predictive yield forecast for this month",
+    "Summarize all active farm advisories",
+    "Recommend an irrigation schedule for the next 7 days",
+  ]},
 ];
 
-// Mock conversation history
-const INITIAL_MESSAGES: Message[] = [
-  { id: '1', text: "Hi Tsedzu! Your fields look healthy today. How can I help you?", isUser: false },
-  { id: '2', text: "When should I apply fertilizer to the maize?", isUser: true },
-  { id: '3', text: "Based on your current soil NPK levels (N is slightly low at 12mg/kg), you should apply a nitrogen-rich fertilizer within the next 3 days, ideally before the expected rain on Friday.", isUser: false },
+const nowTime = () => {
+  const d = new Date();
+  return `${d.getHours()}:${String(d.getMinutes()).padStart(2, '0')}`;
+};
+
+
+
+// Build weather-aware initial suggestions from advisory engine
+const buildWeatherSuggestions = (): string[] => {
+  const weatherTips: string[] = [];
+  const topAdvisory = weatherAdvisories[0];
+  const heavyRainDay = WEATHER_FORECAST.find(d => d.rainMm >= 20);
+  const fertWindow = WEATHER_FORECAST.find(d => d.rainMm >= 5 && d.rainMm < 20);
+  
+  if (heavyRainDay) {
+    weatherTips.push(`Rain of ${heavyRainDay.rainMm}mm on ${heavyRainDay.day} — what should I do?`);
+  }
+  if (fertWindow && !heavyRainDay) {
+    weatherTips.push(`Is ${fertWindow.day} a good day to apply fertiliser?`);
+  }
+  if (topAdvisory?.urgency === 'critical') {
+    weatherTips.push(`Explain the critical weather advisory`);
+  }
+  return [
+    ...weatherTips,
+    "When should I water the maize?",
+    "Any disease risks this week?",
+    "Optimal fertilizer schedule?",
+  ].slice(0, 4);
+};
+
+const SUGGESTIONS = buildWeatherSuggestions();
+
+// Build weather-context greeting for AI
+const buildWeatherGreeting = (): string => {
+  const topAdvisory = weatherAdvisories[0];
+  const heavyRainDay = WEATHER_FORECAST.find(d => d.rainMm >= 20);
+  if (topAdvisory?.urgency === 'critical' && heavyRainDay) {
+    return `Hello Tsedzu! ⚠️ I've detected a critical weather event — ${heavyRainDay.rainMm}mm of rain is expected on ${heavyRainDay.day}. I have ${weatherAdvisories.length} active advisories ready. How can I help you prepare?`;
+  }
+  if (topAdvisory?.urgency === 'positive') {
+    return `Hello Tsedzu! 🌿 Good news — there's an optimal ${topAdvisory.title.split(' ')[0].toLowerCase()} window coming up this week. I have ${weatherAdvisories.length} farm advisories ready. What would you like to do first?`;
+  }
+  return `Hello Tsedzu! I am Farmru AI. I've analysed this week's weather forecast and have ${weatherAdvisories.length} predictive advisories. How can I assist with your farm today?`;
+};
+
+const LATEST_SUGGESTIONS = [
+  "Analyze irrigation cycle vs temp",
+  "Recommend harvest timeline",
+  "Generate predictive yield report"
 ];
 
 export default function ChatScreen() {
@@ -32,49 +101,110 @@ export default function ChatScreen() {
   const theme = useThemeColors();
   const styles = getStyles(theme);
   
-  const pulseAnim = useRef(new Animated.Value(0.3)).current;
-  const [messages, setMessages] = useState<Message[]>(INITIAL_MESSAGES);
+  const [messages, setMessages] = useState<Message[]>([
+    { id: '1', text: buildWeatherGreeting(), isUser: false, timestamp: nowTime() },
+  ]);
   const [inputText, setInputText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [currentSuggestions, setCurrentSuggestions] = useState<string[]>(SUGGESTIONS);
+  const [isSuggestionsCollapsed, setIsSuggestionsCollapsed] = useState<boolean>(false);
+  
+  // Animated value for typing dots
+  const pulseAnim = useRef(new Animated.Value(0.4)).current;
+  
   const SOIL_BROWN = theme.soilBrown;
 
   useEffect(() => {
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(pulseAnim, { toValue: 1, duration: 800, useNativeDriver: true }),
-        Animated.timing(pulseAnim, { toValue: 0.3, duration: 800, useNativeDriver: true })
-      ])
-    ).start();
-  }, []);
+    if (isTyping) {
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(pulseAnim, { toValue: 1, duration: 600, useNativeDriver: true }),
+          Animated.timing(pulseAnim, { toValue: 0.4, duration: 600, useNativeDriver: true })
+        ])
+      ).start();
+    } else {
+      pulseAnim.stopAnimation();
+    }
+  }, [isTyping]);
 
-  const handleSend = () => {
-    if (!inputText.trim()) return;
-    
-    // Add User Message
-    const userMsg: Message = { id: Date.now().toString(), text: inputText.trim(), isUser: true };
+  const handleSend = (overrideText?: string) => {
+    const query = (overrideText ?? inputText).trim();
+    if (!query) return;
+    const userMsg: Message = { id: Date.now().toString(), text: query, isUser: true, timestamp: nowTime() };
     setMessages(prev => [...prev, userMsg]);
     setInputText('');
-    Keyboard.dismiss();
     setIsTyping(true);
+    setIsSuggestionsCollapsed(true);
+    setActiveCategory(null);
 
-    setTimeout(() => scrollViewRef.current?.scrollToEnd({ animated: true }), 100);
-
-    // Mock AI Response after a delay
+    // Generate context-aware AI response based on weather and query keywords
     setTimeout(() => {
-      setIsTyping(false);
+      let aiText = "Based on your recent sensor logs, I advise triggering the smart valve briefly to lower the ambient soil temperature ahead of the upcoming heatwave.";
+      
+      const lowerQuery = query.toLowerCase();
+      const heavyRainDay = WEATHER_FORECAST.find(d => d.rainMm >= 20);
+      const fertWindow = WEATHER_FORECAST.find(d => d.rainMm >= 5 && d.rainMm < 20);
+      const topAdvisory = weatherAdvisories[0];
+
+      if (lowerQuery.includes('rain') || lowerQuery.includes('water') || lowerQuery.includes('irrigat')) {
+        if (heavyRainDay) {
+          aiText = `⚠️ Do not irrigate today! ${heavyRainDay.rainMm}mm of rain is expected on ${heavyRainDay.day} (${heavyRainDay.rainProbability}% probability). Suspend all irrigation systems until after the event to avoid waterlogging and waste.`;
+        } else {
+          aiText = `No significant rain is forecast this week. I recommend increasing your irrigation frequency by 25% starting today. Prioritise fields with moisture below 35%. Water before 8am or after 5pm to reduce evaporation.`;
+        }
+      } else if (lowerQuery.includes('fertilizer') || lowerQuery.includes('fertiliser') || lowerQuery.includes('npk')) {
+        if (fertWindow && !heavyRainDay) {
+          aiText = `✅ Perfect timing! Apply your nitrogen-rich fertilizer today or tomorrow. Light rain of ${fertWindow.rainMm}mm is expected on ${fertWindow.day}, which will wash nutrients into the root zone efficiently without causing runoff.`;
+        } else if (heavyRainDay) {
+          aiText = `🚫 Do not apply fertilizer right now. Heavy rain of ${heavyRainDay.rainMm}mm on ${heavyRainDay.day} will cause runoff and waste. Wait until after ${heavyRainDay.day} — then apply within 24–48 hours of the next light rain.`;
+        } else {
+          aiText = `Your current NPK levels show Nitrogen at 45mg/kg (borderline). Apply a balanced 20-10-10 fertilizer this week. Avoid application on windy days over 20 kph.`;
+        }
+      } else if (lowerQuery.includes('advisory') || lowerQuery.includes('critical') || lowerQuery.includes('alert')) {
+        aiText = topAdvisory 
+          ? `Your top priority advisory: "${topAdvisory.title}". ${topAdvisory.detail} Recommended actions: ${topAdvisory.actions.slice(0, 2).join('; ')}.`
+          : 'No critical advisories at this time. Check back for updates.';
+      } else if (lowerQuery.includes('harvest') || lowerQuery.includes('spray')) {
+        const sprayWindow = WEATHER_FORECAST.find(d => d.windKph < 15 && d.rainProbability < 20);
+        aiText = sprayWindow
+          ? `🌿 Ideal conditions for spraying/harvest are forecast for ${sprayWindow.day} — wind at ${sprayWindow.windKph}kph, only ${sprayWindow.rainProbability}% rain chance, temperature ${sprayWindow.tempHigh}°C. Schedule your operations for that morning.`
+          : 'No optimal spray window found this week. Monitor conditions daily.';
+      } else if (lowerQuery.includes('disease') || lowerQuery.includes('pest') || lowerQuery.includes('fungal')) {
+        const highHumid = WEATHER_FORECAST.find(d => d.humidity >= 75);
+        aiText = highHumid
+          ? `⚠️ Disease risk on ${highHumid.day}! Humidity will reach ${highHumid.humidity}%, creating ideal conditions for fungal diseases. Apply a preventive fungicide before ${highHumid.day} and scout fields post-rain.`
+          : 'No high-humidity events detected this week. Maintain regular pest scouting schedules.';
+      }
+
       const aiMsg: Message = { 
         id: (Date.now() + 1).toString(), 
-        text: "I'll analyze that for you shortly. Based on current node data, conditions remain optimal.", 
-        isUser: false 
+        text: aiText, 
+        isUser: false,
+        timestamp: nowTime(),
       };
       setMessages(prev => [...prev, aiMsg]);
-      setTimeout(() => scrollViewRef.current?.scrollToEnd({ animated: true }), 100);
-    }, 2000);
+      setIsTyping(false);
+      setCurrentSuggestions(LATEST_SUGGESTIONS);
+      setIsSuggestionsCollapsed(false);
+    }, 1500);
   };
 
   const handleSuggestion = (text: string) => {
-    setInputText(text);
+    // Auto-send immediately — no extra tap required
+    handleSend(text);
+  };
+
+  const handleCategoryPress = (catId: string) => {
+    if (activeCategory === catId) {
+      setActiveCategory(null);
+      setCurrentSuggestions(SUGGESTIONS);
+      return;
+    }
+    setActiveCategory(catId);
+    const cat = TOPIC_CATEGORIES.find(c => c.id === catId);
+    if (cat) setCurrentSuggestions(cat.suggestions);
+    setIsSuggestionsCollapsed(false);
   };
 
   return (
@@ -119,13 +249,20 @@ export default function ChatScreen() {
                 </View>
               )}
               
-              <View style={[styles.glassBubble, msg.isUser ? styles.glassBubbleUser : styles.glassBubbleAI]}>
-                <BlurView intensity={theme.isDark ? 35 : 70} tint={theme.blurTint} style={StyleSheet.absoluteFill} />
-                <View style={styles.bubbleContent}>
-                  <Text style={[styles.messageText, msg.isUser && styles.messageTextUser]}>
-                    {msg.text}
-                  </Text>
+              <View style={{ flexShrink: 1 }}>
+                <View style={[styles.glassBubble, msg.isUser ? styles.glassBubbleUser : styles.glassBubbleAI]}>
+                  <BlurView intensity={theme.isDark ? 35 : 70} tint={theme.blurTint} style={StyleSheet.absoluteFill} />
+                  <View style={styles.bubbleContent}>
+                    <Text style={[styles.messageText, msg.isUser && styles.messageTextUser]}>
+                      {msg.text}
+                    </Text>
+                  </View>
                 </View>
+                {msg.timestamp && (
+                  <Text style={{ fontFamily: 'Outfit_400Regular', fontSize: 10, color: theme.textDim, marginTop: 3, alignSelf: msg.isUser ? 'flex-end' : 'flex-start', paddingHorizontal: 4 }}>
+                    {msg.timestamp}
+                  </Text>
+                )}
               </View>
             </View>
           ))}
@@ -148,17 +285,56 @@ export default function ChatScreen() {
           )}
         </ScrollView>
 
-        {/* Floating Input Pill */}
+        {/* Floating Input Pill & Dynamic Suggestions */}
         <View style={styles.floatingInputWrapper}>
           <BlurView intensity={theme.isDark ? 80 : 90} tint={theme.blurTint} style={StyleSheet.absoluteFill} />
           
-          <View style={styles.suggestionsContainer}>
-            {SUGGESTIONS.map((sug, i) => (
-              <TouchableOpacity key={i} style={styles.suggestionChip} onPress={() => handleSuggestion(sug)}>
-                <Text style={styles.suggestionText}>{sug}</Text>
-              </TouchableOpacity>
-            ))}
+          {/* Topic category strip */}
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 10 }}>
+            <View style={{ flexDirection: 'row', gap: 7 }}>
+              {TOPIC_CATEGORIES.map(cat => (
+                <Pressable
+                  key={cat.id}
+                  onPress={() => handleCategoryPress(cat.id)}
+                  style={({ pressed }) => ({
+                    paddingHorizontal: 13, paddingVertical: 6, borderRadius: 20,
+                    backgroundColor: activeCategory === cat.id ? cat.color + '25' : theme.glassBackground,
+                    borderWidth: 1.5,
+                    borderColor: activeCategory === cat.id ? cat.color + '70' : theme.glassBorder,
+                    transform: [{ scale: pressed ? 0.95 : 1 }],
+                  })}
+                >
+                  <Text style={{ fontFamily: 'Outfit_600SemiBold', fontSize: 12, color: activeCategory === cat.id ? cat.color : theme.textSub }}>
+                    {cat.label}
+                  </Text>
+                </Pressable>
+              ))}
+            </View>
+          </ScrollView>
+
+          <View style={styles.suggestionsHeaderRow}>
+            <Text style={styles.suggestionsTitle}>AI Prompts</Text>
+            <TouchableOpacity onPress={() => setIsSuggestionsCollapsed(!isSuggestionsCollapsed)} style={styles.collapseButton}>
+               <MaterialIcons name={isSuggestionsCollapsed ? "keyboard-arrow-up" : "keyboard-arrow-down"} size={20} color={theme.textSub} />
+            </TouchableOpacity>
           </View>
+
+          {!isSuggestionsCollapsed && (
+            <View style={styles.suggestionsContainer}>
+              {currentSuggestions.map((sug, i) => (
+                <Pressable
+                  key={i}
+                  style={({ pressed }) => [styles.suggestionChip, {
+                    transform: [{ scale: pressed ? 0.95 : 1 }],
+                    backgroundColor: pressed ? theme.soilBrown + '20' : theme.glassBackgroundStrong,
+                  }]}
+                  onPress={() => handleSuggestion(sug)}
+                >
+                  <Text style={styles.suggestionText}>{sug}</Text>
+                </Pressable>
+              ))}
+            </View>
+          )}
 
           <View style={styles.inputRow}>
             <View style={styles.inputContainer}>
@@ -179,7 +355,7 @@ export default function ChatScreen() {
                 !inputText.trim() && { backgroundColor: theme.cardIconBg }
               ]} 
               activeOpacity={0.7} 
-              onPress={handleSend}
+              onPress={() => handleSend()}
               disabled={!inputText.trim()}
             >
               {inputText.trim() ? (
@@ -187,7 +363,9 @@ export default function ChatScreen() {
                    <MaterialIcons name="send" size={20} color="#FFF" />
                 </LinearGradient>
               ) : (
-                <MaterialIcons name="send" size={20} color={theme.textDim} />
+                <View style={styles.sendButtonGradient}>
+                  <MaterialIcons name="mic" size={20} color={theme.textDim} />
+                </View>
               )}
             </TouchableOpacity>
           </View>
@@ -319,14 +497,33 @@ const getStyles = (theme: ReturnType<typeof useThemeColors>) => StyleSheet.creat
     shadowOpacity: theme.isDark ? 0.3 : 0.1,
     shadowRadius: 10,
     elevation: 5,
-  },
-  suggestionsContainer: {
+    borderTopWidth: 1,
+    borderTopColor: theme.glassBorder,
     paddingHorizontal: 20,
     paddingTop: 16,
-    paddingBottom: 10,
-    gap: 8,
+    paddingBottom: Platform.OS === 'ios' ? 32 : 24,
+  },
+  suggestionsHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  suggestionsTitle: {
+    color: theme.textSub,
+    fontFamily: 'Outfit_600SemiBold',
+    fontSize: 13,
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
+  },
+  collapseButton: {
+    padding: 4,
+  },
+  suggestionsContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
+    gap: 8,
+    marginBottom: 12,
   },
   suggestionChip: {
     backgroundColor: theme.glassBackgroundStrong, // Brighter
