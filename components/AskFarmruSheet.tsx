@@ -93,20 +93,26 @@ export function AskFarmruSheet({ visible, onClose }: AskFarmruSheetProps) {
   const [isTyping, setIsTyping] = useState(false);
   const [suggestions] = useState(buildSuggestions);
   const scrollRef = useRef<ScrollView>(null);
+  const [modalVisible, setModalVisible] = useState(visible);
 
   // ── Open / close animation ─────────────────────────────────
   useEffect(() => {
     if (visible) {
+      setModalVisible(true);
       if (Platform.OS !== 'web') Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-      Animated.parallel([
-        Animated.spring(slideY, { toValue: 0, useNativeDriver: true, tension: 68, friction: 14 }),
-        Animated.timing(bgOpacity, { toValue: 1, duration: 220, useNativeDriver: true }),
-      ]).start();
+      requestAnimationFrame(() => {
+        Animated.parallel([
+          Animated.spring(slideY, { toValue: 0, useNativeDriver: true, tension: 68, friction: 14 }),
+          Animated.timing(bgOpacity, { toValue: 1, duration: 220, useNativeDriver: true }),
+        ]).start();
+      });
     } else {
       Animated.parallel([
-        Animated.timing(slideY, { toValue: SHEET_HEIGHT, duration: 300, useNativeDriver: true }),
+        Animated.timing(slideY, { toValue: SHEET_HEIGHT, duration: 260, useNativeDriver: true }),
         Animated.timing(bgOpacity, { toValue: 0, duration: 220, useNativeDriver: true }),
-      ]).start();
+      ]).start(() => {
+        setModalVisible(false);
+      });
     }
   }, [visible]);
 
@@ -120,11 +126,10 @@ export function AskFarmruSheet({ visible, onClose }: AskFarmruSheetProps) {
       },
       onPanResponderRelease: (_, g) => {
         if (g.dy > 100 || g.vy > 0.6) {
-          // Dismiss
-          Animated.timing(panRef, { toValue: SHEET_HEIGHT, duration: 260, useNativeDriver: true }).start(() => {
-            panRef.setValue(0);
-            onClose();
-          });
+          // Dismiss gracefully: sync pan into slideY, reset pan, and let useEffect exit animation run
+          slideY.setValue(g.dy);
+          panRef.setValue(0);
+          onClose();
         } else {
           // Snap back
           Animated.spring(panRef, { toValue: 0, useNativeDriver: true, tension: 80, friction: 12 }).start();
@@ -151,12 +156,8 @@ export function AskFarmruSheet({ visible, onClose }: AskFarmruSheetProps) {
 
   const combinedY = Animated.add(slideY, panRef);
 
-  if (!visible && !isTyping) {
-    // Keep mounted during close animation
-  }
-
   return (
-    <Modal visible={visible} transparent animationType="none" onRequestClose={onClose}>
+    <Modal visible={modalVisible} transparent animationType="none" onRequestClose={onClose}>
       {/* Backdrop */}
       <Animated.View style={[StyleSheet.absoluteFill, { opacity: bgOpacity }]}>
         <Pressable style={StyleSheet.absoluteFill} onPress={onClose}>

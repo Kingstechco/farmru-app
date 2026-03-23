@@ -65,7 +65,7 @@ export default function SettingsScreen() {
       rows: [
         { icon: 'info',    color: theme.textDim, label: 'App Version',  sublabel: 'Farmru v2.4.1 (build 441)', type: 'info' },
         { icon: 'shield',  color: '#4ade80',     label: 'Privacy Policy', type: 'nav' },
-        { icon: 'support', color: '#38bdf8',     label: 'Support & Help', type: 'nav' },
+        { icon: 'support', color: '#38bdf8',     label: 'Support & Help', type: 'nav', route: '/help' },
       ],
     },
   ];
