@@ -259,6 +259,14 @@ export default function TabLayout() {
             tabBarIcon: ({ color }) => <MaterialIcons name="query-stats" size={22} color={color} />,
           }}
         />
+        {/* Slot 5 — Devices */}
+        <Tabs.Screen
+          name="devices"
+          options={{
+            title: 'Devices',
+            tabBarIcon: ({ color }) => <MaterialIcons name="router" size={22} color={color} />,
+          }}
+        />
       </Tabs>
 
       {/* ════════════ Floating AI Assistant button ════════════ */}
