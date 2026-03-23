@@ -162,13 +162,11 @@ export default function DashboardScreen() {
 
             {/* Weather Badge */}
             <TouchableOpacity 
-              style={styles.weatherBadgeContainer} 
+              style={[styles.headerIconButton, { backgroundColor: theme.isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)' }]} 
               activeOpacity={0.7} 
               onPress={() => setIsWeatherOpen(true)}
             >
-              <BlurView intensity={theme.isDark ? 30 : 60} tint={theme.blurTint} style={StyleSheet.absoluteFill} />
-              <MaterialIcons name="wb-sunny" size={20} color={SOIL_BROWN} />
-              <Text style={styles.weatherText}>24°C</Text>
+              <MaterialIcons name="wb-sunny" size={24} color={SOIL_BROWN} />
             </TouchableOpacity>
           </View>
         </View>

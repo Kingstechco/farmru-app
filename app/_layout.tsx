@@ -46,9 +46,9 @@ export default function RootLayout() {
         <Stack.Screen name="filter-modal" options={{ presentation: 'transparentModal', animation: 'fade', animationDuration: 200 }} />
         <Stack.Screen name="analytics" options={{ animation: 'ios_from_right', animationDuration: 280 }} />
         <Stack.Screen name="devices" options={{ animation: 'ios_from_right', animationDuration: 280 }} />
-        {/* Secondary pages reached via router.push from More tray */}
-        <Stack.Screen name="(tabs)/notifications" options={{ animation: 'slide_from_bottom', presentation: 'modal', animationDuration: 320 }} />
-        <Stack.Screen name="(tabs)/settings" options={{ animation: 'slide_from_bottom', presentation: 'modal', animationDuration: 320 }} />
+        {/* Secondary pages reached via router.push */}
+        <Stack.Screen name="notifications" options={{ animation: 'slide_from_bottom', presentation: 'modal', animationDuration: 320 }} />
+        <Stack.Screen name="settings" options={{ animation: 'slide_from_bottom', presentation: 'modal', animationDuration: 320 }} />
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>

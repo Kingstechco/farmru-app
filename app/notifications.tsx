@@ -97,7 +97,7 @@ export default function NotificationsScreen() {
     <LinearGradient colors={[theme.bgGradientStart, theme.bgGradientEnd]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ flex: 1 }}>
       {/* Header */}
       <View style={[styles.header, { paddingTop: insets.top + (Platform.OS === 'web' ? 24 : 16) }]}>
-        <View>
+        <View style={{ flex: 1 }}>
           <Text style={[styles.headerSub, { color: theme.textSub }]}>Farm Alerts</Text>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
             <Text style={[styles.headerTitle, { color: theme.textMain }]}>Notifications</Text>
@@ -107,12 +107,19 @@ export default function NotificationsScreen() {
               </View>
             )}
           </View>
+          {unreadCount > 0 && (
+            <TouchableOpacity onPress={markAllRead} activeOpacity={0.7} style={{ marginTop: 6 }}>
+              <Text style={{ fontFamily: 'Outfit_600SemiBold', fontSize: 13, color: theme.tintGreen }}>Mark all read</Text>
+            </TouchableOpacity>
+          )}
         </View>
-        {unreadCount > 0 && (
-          <TouchableOpacity onPress={markAllRead} activeOpacity={0.7}>
-            <Text style={{ fontFamily: 'Outfit_600SemiBold', fontSize: 13, color: theme.tintGreen }}>Mark all read</Text>
-          </TouchableOpacity>
-        )}
+        <TouchableOpacity 
+          style={styles.closeBtn} 
+          activeOpacity={0.7} 
+          onPress={() => router.back()}
+        >
+          <MaterialIcons name="close" size={26} color={theme.textMain} />
+        </TouchableOpacity>
       </View>
 
       {/* Filter chips */}
@@ -162,12 +169,17 @@ export default function NotificationsScreen() {
 const getStyles = (theme: any) => StyleSheet.create({});
 const styles = StyleSheet.create({
   header: {
-    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end',
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start',
     paddingHorizontal: 24, paddingBottom: 16,
     borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.08)',
   },
   headerSub: { fontFamily: 'Outfit_500Medium', fontSize: 13, marginBottom: 2 },
   headerTitle: { fontFamily: 'Outfit_700Bold', fontSize: 24 },
+  closeBtn: {
+    width: 44, height: 44, borderRadius: 22,
+    alignItems: 'center', justifyContent: 'center',
+    backgroundColor: 'rgba(0,0,0,0.05)',
+  },
   scrollContent: { padding: 20, paddingBottom: 120, maxWidth: 700, alignSelf: 'center', width: '100%' },
   groupLabel: { fontFamily: 'Outfit_700Bold', fontSize: 11, letterSpacing: 1, marginBottom: 10, marginTop: 6 },
   notifCard: {

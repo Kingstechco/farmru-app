@@ -109,6 +109,13 @@ export default function SettingsScreen() {
           <Text style={[styles.headerSub, { color: theme.textSub }]}>Preferences</Text>
           <Text style={[styles.headerTitle, { color: theme.textMain }]}>Settings</Text>
         </View>
+        <TouchableOpacity 
+          style={styles.closeBtn} 
+          activeOpacity={0.7} 
+          onPress={() => router.back()}
+        >
+          <MaterialIcons name="close" size={26} color={theme.textMain} />
+        </TouchableOpacity>
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
@@ -158,6 +165,12 @@ const styles = StyleSheet.create({
   },
   headerSub: { fontFamily: 'Outfit_500Medium', fontSize: 13, marginBottom: 2 },
   headerTitle: { fontFamily: 'Outfit_700Bold', fontSize: 24 },
+  closeBtn: {
+    width: 44, height: 44, borderRadius: 22,
+    alignItems: 'center', justifyContent: 'center',
+    backgroundColor: 'rgba(0,0,0,0.05)',
+    marginBottom: -4,
+  },
   scrollContent: { padding: 20, paddingBottom: 120, maxWidth: 700, alignSelf: 'center', width: '100%' },
   profileCard: {
     flexDirection: 'row', alignItems: 'center', gap: 16,
