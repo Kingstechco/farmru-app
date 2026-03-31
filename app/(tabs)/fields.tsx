@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {
   ScrollView, StyleSheet, Text, View, TouchableOpacity,
-  Platform, Dimensions, Animated, Pressable
+  Platform, Dimensions, Animated, Pressable, ImageBackground
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AppIcon as MaterialIcons } from '@/components/ui/AppIcon';
@@ -427,7 +427,12 @@ export default function FieldsScreen() {
 
         {/* Crop Lifecycle */}
         <View style={[styles.glassCard]}>
-          <BlurView intensity={theme.isDark ? 40 : 70} tint={theme.blurTint} style={StyleSheet.absoluteFill} />
+          <ImageBackground
+            source={require('../../assets/images/farmru_abstract.webp')}
+            style={StyleSheet.absoluteFill}
+            imageStyle={{ opacity: theme.isDark ? 0.25 : 0.15, resizeMode: 'cover', borderRadius: 24 }}
+          />
+          <BlurView intensity={theme.isDark ? 55 : 75} tint={theme.blurTint} style={StyleSheet.absoluteFill} />
           <View style={styles.glassContent}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 12 }}>
               <Text style={styles.sectionTitle}>Crop Lifecycle</Text>

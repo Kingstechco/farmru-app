@@ -9,7 +9,8 @@ import {
   ScrollView, 
   ActivityIndicator,
   Platform,
-  Dimensions
+  Dimensions,
+  ImageBackground
 } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { AppIcon as MaterialIcons } from './ui/AppIcon';
@@ -159,6 +160,11 @@ export const SoilAnalysisModal = ({ visible, onClose }: SoilAnalysisModalProps) 
 
           {mode === 'iot' && (
             <View style={styles.scanBody}>
+               <ImageBackground
+                 source={require('../assets/images/farmru_soil.webp')}
+                 style={StyleSheet.absoluteFill}
+                 imageStyle={{ opacity: 0.12, resizeMode: 'cover', borderRadius: 24 }}
+               />
                <View style={styles.scanAnimationBox}>
                  <ActivityIndicator size="large" color={theme.tintGreen} />
                  <Text style={[styles.scanText, { marginTop: 24 }]}>
@@ -228,7 +234,12 @@ export const SoilAnalysisModal = ({ visible, onClose }: SoilAnalysisModalProps) 
           )}
 
           {mode === 'success' && (
-            <View style={{ paddingVertical: 40, alignItems: 'center', justifyContent: 'center' }}>
+            <View style={{ paddingVertical: 40, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+              <ImageBackground
+                source={require('../assets/images/farmru_soil.png')}
+                style={StyleSheet.absoluteFill}
+                imageStyle={{ opacity: 0.1, resizeMode: 'cover' }}
+              />
               <View style={{ width: 80, height: 80, borderRadius: 40, backgroundColor: theme.tintGreen + '20', alignItems: 'center', justifyContent: 'center', marginBottom: 20 }}>
                 <MaterialIcons name="check" size={48} color={theme.tintGreen} />
               </View>

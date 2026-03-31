@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ScrollView, StyleSheet, Text, View, TouchableOpacity, Platform, Modal, Pressable, Animated } from 'react-native';
+import { ScrollView, StyleSheet, Text, View, TouchableOpacity, Platform, Modal, Pressable, Animated, ImageBackground } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AppIcon as MaterialIcons } from '@/components/ui/AppIcon';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -157,8 +157,20 @@ export default function DashboardScreen() {
     >
       <View style={{ paddingTop: insets.top, flex: 1 }}>
         
-        {/* Floating Glass Header */}
-        <View style={[styles.header, { paddingTop: Platform.OS === 'web' ? 20 : 12 }]}>
+        {/* ── Hero header with leaf image confined strictly to header ── */}
+        <ImageBackground
+          source={require('../../assets/images/farmru_leaf.webp')}
+          style={[styles.header, {
+            paddingTop: Platform.OS === 'web' ? 20 : 12,
+            overflow: 'hidden',
+          }]}
+          imageStyle={{ opacity: theme.isDark ? 0.28 : 0.18, resizeMode: 'cover' }}
+        >
+          {/* Gradient fade across the whole header bottom edge */}
+          <LinearGradient
+            colors={['transparent', theme.bgGradientStart]}
+            style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 40 }}
+          />
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}>
             <TouchableOpacity onPress={() => router.push('/menu')} activeOpacity={0.8}>
               <View style={[styles.avatarBoxTop, { backgroundColor: SOIL_BROWN }]}>
@@ -200,7 +212,7 @@ export default function DashboardScreen() {
               <MaterialIcons name="wb-sunny" size={24} color={SOIL_BROWN} />
             </TouchableOpacity>
           </View>
-        </View>
+        </ImageBackground>
 
         <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
 
