@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ScrollView, Platform, TouchableOpacity, LayoutA
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useThemeColors } from '@/hooks/useThemeColors';
 import { AppIcon as MaterialIcons } from '@/components/ui/AppIcon';
+import { MaterialIcons as ExpoMaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import { useRouter, Stack } from 'expo-router';
@@ -12,7 +13,7 @@ interface ActionItem {
   title: string;
   desc: string;
   priorityBadge: string;
-  icon: keyof typeof MaterialIcons.glyphMap;
+  icon: keyof typeof ExpoMaterialIcons.glyphMap;
   colorHex: string;
   btnLabel: string;
   completedAt?: string;
@@ -37,7 +38,7 @@ export default function ActionCenterScreen() {
     {
       id: 'task_2',
       title: 'Phosphorus Boost',
-      desc: 'Maize Plot B is reaching flowering stage. Apply organic Phosphorus to maximize yield trajectories.',
+      desc: 'Maize Plot B is reaching the flowering stage. Apply organic Phosphorus to help the crop grow strong.',
       priorityBadge: 'Upcoming • This Week',
       icon: 'local-florist',
       colorHex: theme.soilBrown,
@@ -110,7 +111,7 @@ export default function ActionCenterScreen() {
           <View style={styles.allClearBox}>
             <MaterialIcons name="check-circle" size={48} color={theme.tintGreen} />
             <Text style={styles.allClearTitle}>All Caught Up!</Text>
-            <Text style={styles.allClearDesc}>No pressing interventions are required by the AI algorithm at this moment.</Text>
+            <Text style={styles.allClearDesc}>Everything looks great. Your farm doesn't need any immediate attention right now.</Text>
           </View>
         )}
 
@@ -135,7 +136,7 @@ export default function ActionCenterScreen() {
 
         {/* Crop Recommendations */}
         <Text style={[styles.sectionHeading, { marginTop: 24 }]}>AI Crop Recommendations</Text>
-        <Text style={styles.sectionDesc}>Based on your current soil NPK (12-8-14), 18°C avg temp, and 6.8 pH, Farmru AI recommends the following rotations for maximum profitability:</Text>
+        <Text style={styles.sectionDesc}>Based on your soil nutrients (12-8-14), 18°C average temperature, and 6.8 pH, Farmru AI suggests these next crops for a strong harvest:</Text>
 
         <View style={styles.cropGrid}>
           {/* Crop 1 */}
@@ -145,7 +146,7 @@ export default function ActionCenterScreen() {
                <MaterialIcons name="eco" size={32} color={theme.tintGreen} />
             </View>
             <Text style={styles.cropName}>Spinach</Text>
-            <Text style={styles.cropReasoning}>Prefers high nitrogen and cooler temperatures. Very high yield probability.</Text>
+            <Text style={styles.cropReasoning}>Grows well in cool weather and loves nitrogen. Great chance for a strong harvest.</Text>
             <View style={[styles.matchBadge, { backgroundColor: theme.isDark ? 'rgba(98,168,85,0.2)' : 'rgba(98,168,85,0.1)' }]}>
               <Text style={[styles.matchText, { color: theme.tintGreen }]}>98% Match</Text>
             </View>
@@ -158,7 +159,7 @@ export default function ActionCenterScreen() {
                <MaterialIcons name="grass" size={32} color="#f59e0b" />
             </View>
             <Text style={styles.cropName}>Cabbage</Text>
-            <Text style={styles.cropReasoning}>Thrives in 6.5-7.0 pH. Consumes heavy nutrients which your soil easily supports.</Text>
+            <Text style={styles.cropReasoning}>Thrives in 6.5-7.0 pH. It consumes heavy nutrients, which your soil easily supports right now.</Text>
             <View style={[styles.matchBadge, { backgroundColor: 'rgba(245, 158, 11, 0.15)' }]}>
               <Text style={[styles.matchText, { color: '#f59e0b' }]}>85% Match</Text>
             </View>
@@ -221,10 +222,10 @@ const getStyles = (theme: ReturnType<typeof useThemeColors>) => StyleSheet.creat
   sectionDesc: {
     color: theme.textSub,
     fontFamily: 'Outfit_500Medium',
-    fontSize: 14,
+    fontSize: 15,
     marginBottom: 20,
     paddingLeft: 4,
-    lineHeight: 20,
+    lineHeight: 22,
   },
   actionCardWrapper: {
     marginBottom: 16,
@@ -371,10 +372,10 @@ const getStyles = (theme: ReturnType<typeof useThemeColors>) => StyleSheet.creat
   cropReasoning: {
     color: theme.textSub,
     fontFamily: 'Outfit_400Regular',
-    fontSize: 12,
+    fontSize: 14,
     textAlign: 'center',
     marginBottom: 16,
-    lineHeight: 18,
+    lineHeight: 20,
   },
   matchBadge: {
     paddingHorizontal: 16,

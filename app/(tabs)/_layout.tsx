@@ -6,13 +6,14 @@ import { AskFarmruSheet } from '@/components/AskFarmruSheet';
 import { BlurView } from 'expo-blur';
 import {
   StyleSheet, View, Platform, TouchableOpacity, Text,
-  Modal, Animated, Pressable
+  Modal, Animated, Pressable, Alert
 } from 'react-native';
 import { useThemeColors } from '@/hooks/useThemeColors';
 import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import { store } from '@/utils/store';
 import { SoilAnalysisModal } from '@/components/SoilAnalysisModal';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // ─── Quick Log actions ───────────────────────────────────────
 const QUICK_ACTIONS = [
@@ -24,6 +25,7 @@ const QUICK_ACTIONS = [
 // ─── Floating Ask Farmru pill button (Circle → Pill Morph) ──
 function FloatingAIButton({ onPress, sheetOpen }: { onPress: () => void; sheetOpen: boolean }) {
   const theme = useThemeColors();
+  const insets = useSafeAreaInsets();
 
   // Animations
   // pillW: 0 = collapsed circle (52px wide), 1 = expanded pill (~145px wide)
@@ -72,7 +74,7 @@ function FloatingAIButton({ onPress, sheetOpen }: { onPress: () => void; sheetOp
   };
 
   return (
-    <Animated.View style={[styles.fabWrap, { transform: [{ translateX: slideX }] }]}>
+    <Animated.View style={[styles.fabWrap, { bottom: Math.max(insets.bottom + 8, 16) + 80, transform: [{ translateX: slideX }] }]}>
       <Pressable
         onPress={handlePress}
         onHoverIn={Platform.OS === 'web' ? expandPill : undefined}
@@ -141,12 +143,15 @@ function QuickLogTabButton({ onPress }: { onPress: () => void; children?: React.
 
 // ─── Main layout ─────────────────────────────────────────────
 export default function TabLayout() {
+  const insets = useSafeAreaInsets();
   const theme = useThemeColors();
   const router = useRouter();
 
   const [quickLogOpen, setQuickLogOpen] = React.useState(false);
   const [soilVisible, setSoilVisible]   = React.useState(false);
   const [askOpen, setAskOpen]           = React.useState(false);
+  const [successAction, setSuccessAction] = React.useState<string | null>(null);
+  const [confirmAction, setConfirmAction] = React.useState<string | null>(null);
 
   // Quick Log animations
   const qlSlide   = useRef(new Animated.Value(320)).current;
@@ -157,6 +162,8 @@ export default function TabLayout() {
   const inactiveColor = theme.isDark ? 'rgba(255,255,255,0.45)' : 'rgba(80,70,60,0.55)';
 
   const openQL = () => {
+    setSuccessAction(null);
+    setConfirmAction(null);
     setQuickLogOpen(true);
     if (Platform.OS !== 'web') Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     Animated.parallel([
@@ -175,18 +182,33 @@ export default function TabLayout() {
   };
 
   const handleQL = (key: typeof QUICK_ACTIONS[0]['key']) => {
-    if (Platform.OS !== 'web') Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     if (key === 'water') {
+      if (confirmAction !== key) {
+        if (Platform.OS !== 'web') Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        setConfirmAction(key);
+        return;
+      }
+      if (Platform.OS !== 'web') Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       store.addActivity({ title: 'Manual Irrigation', subtitle: 'Applied via Quick Log', icon: 'water-drop', color: '#38bdf8' });
       store.setMoistureBoost(15);
-      closeQL();
+      setConfirmAction(null);
+      setSuccessAction(key);
+      setTimeout(closeQL, 850);
     } else if (key === 'soil') {
       closeQL();
       setTimeout(() => setSoilVisible(true), 280);
     } else if (key === 'pest') {
+      if (confirmAction !== key) {
+        if (Platform.OS !== 'web') Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        setConfirmAction(key);
+        return;
+      }
+      if (Platform.OS !== 'web') Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       store.addActivity({ title: 'Pest Sighting', subtitle: 'Immediate action needed', icon: 'bug-report', color: '#ef4444' });
       store.setHealthOverride('Warning');
-      closeQL();
+      setConfirmAction(null);
+      setSuccessAction(key);
+      setTimeout(closeQL, 850);
     }
   };
 
@@ -205,21 +227,24 @@ export default function TabLayout() {
           },
           animation: 'fade',
           tabBarStyle: {
-            position: 'absolute', bottom: 24, left: 20, right: 20,
-            elevation: 15,
-            shadowColor: '#000', shadowOffset: { width: 0, height: 10 },
-            shadowOpacity: 0.3, shadowRadius: 20,
+            position: 'absolute',
+            bottom: Math.max(insets.bottom + 8, 16),
+            left: 16, right: 16,
+            height: 64,
+            paddingBottom: 0,
+            paddingTop: Platform.OS === 'ios' ? 8 : 0,
             backgroundColor: 'transparent',
-            borderRadius: 35, borderTopWidth: 0,
+            borderTopWidth: 0,
+            elevation: 10,
+            shadowColor: '#000', shadowOffset: { width: 0, height: 8 },
+            shadowOpacity: theme.isDark ? 0.35 : 0.1, shadowRadius: 20,
+            borderRadius: 32,
             borderWidth: 1,
-            borderColor: theme.isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.07)',
-            height: 72, paddingBottom: 8, paddingTop: 8,
+            borderColor: theme.isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)',
           },
           tabBarBackground: () => (
-            <View style={{ flex: 1, borderRadius: 34, overflow: 'hidden' }}>
-              <View style={[StyleSheet.absoluteFill, {
-                backgroundColor: theme.isDark ? 'rgba(10,18,28,0.88)' : 'rgba(252,248,244,0.9)',
-              }]} />
+            <View style={{ flex: 1, borderRadius: 32, overflow: 'hidden' }}>
+              <View style={[StyleSheet.absoluteFill, { backgroundColor: theme.isDark ? 'rgba(14,22,34,0.65)' : 'rgba(255,255,255,0.85)' }]} />
               <BlurView tint={theme.isDark ? 'dark' : 'light'} intensity={85} style={StyleSheet.absoluteFill} />
             </View>
           ),
@@ -297,21 +322,27 @@ export default function TabLayout() {
             <View style={styles.actionRow}>
               {QUICK_ACTIONS.map((a, i) => {
                 const sc = qlItems[i].interpolate({ inputRange: [0, 1], outputRange: [0.75, 1] });
+                const isSuccess = successAction === a.key;
+                const isConfirm = confirmAction === a.key;
                 return (
                   <Animated.View key={a.key} style={{ flex: 1, opacity: qlItems[i], transform: [{ scale: sc }] }}>
                     <Pressable
                       onPress={() => handleQL(a.key)}
                       style={({ pressed }) => [styles.actionCard, {
-                        backgroundColor: pressed ? a.color + '28' : a.color + '12',
-                        borderColor: a.color + '45',
-                        transform: [{ scale: pressed ? 0.94 : 1 }],
+                        backgroundColor: isSuccess ? theme.tintGreen : isConfirm ? '#f59e0b' : pressed ? a.color + '28' : a.color + '12',
+                        borderColor: isSuccess ? theme.tintGreen : isConfirm ? '#f59e0b' : a.color + '45',
+                        transform: [{ scale: pressed && !isSuccess ? 0.94 : 1 }],
                       }]}
                     >
-                      <View style={[styles.actionIcon, { backgroundColor: a.color + '20' }]}>
-                        <MaterialIcons name={a.icon as any} size={28} color={a.color} />
+                      <View style={[styles.actionIcon, { backgroundColor: isSuccess || isConfirm ? 'rgba(255,255,255,0.2)' : a.color + '20' }]}>
+                        <MaterialIcons name={isSuccess ? 'check' : isConfirm ? 'warning' : a.icon as any} size={28} color={isSuccess || isConfirm ? '#FFF' : a.color} />
                       </View>
-                      <Text style={[styles.actionLabel, { color: theme.textMain }]}>{a.label}</Text>
-                      <Text style={[styles.actionSub, { color: theme.textSub }]}>{a.sublabel}</Text>
+                      <Text style={[styles.actionLabel, { color: isSuccess || isConfirm ? '#FFF' : theme.textMain }]}>
+                        {isSuccess ? 'Logged!' : isConfirm ? 'Confirm?' : a.label}
+                      </Text>
+                      <Text style={[styles.actionSub, { color: isSuccess || isConfirm ? 'rgba(255,255,255,0.8)' : theme.textSub }]}>
+                        {isSuccess ? 'Success' : isConfirm ? 'Tap again' : a.sublabel}
+                      </Text>
                     </Pressable>
                   </Animated.View>
                 );
@@ -345,7 +376,6 @@ const styles = StyleSheet.create({
   // Floating pill button
   fabWrap: {
     position: 'absolute',
-    bottom: 110,
     right: 16,
     zIndex: 999,
   },
@@ -353,13 +383,13 @@ const styles = StyleSheet.create({
     height: 52,
     borderRadius: 26,
     overflow: 'hidden',
-    shadowColor: '#3D7A3A',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.55,
-    shadowRadius: 14,
-    elevation: 18,
-    borderWidth: 1.5,
-    borderColor: 'rgba(255,255,255,0.28)',
+    shadowColor: '#16a34a',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.45,
+    shadowRadius: 18,
+    elevation: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.18)',
     // Add white background so gradient looks solid during morph
     backgroundColor: '#fff',
   },

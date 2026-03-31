@@ -15,35 +15,11 @@ interface WeatherAdvisoryCardProps {
   onOpenDrawer?: () => void;
 }
 
-const UrgencyBadge = ({ urgency }: { urgency: Advisory['urgency'] }) => {
-  const theme = useThemeColors();
-  const color = ADVISORY_COLORS[urgency];
-  const labels = { critical: 'CRITICAL', warning: 'WARNING', positive: 'OPTIMAL', info: 'INFO' };
-  return (
-    <View style={{ 
-      backgroundColor: color + '20', 
-      borderColor: color + '50', 
-      borderWidth: 1, 
-      borderRadius: 8, 
-      paddingHorizontal: 8, 
-      paddingVertical: 3 
-    }}>
-      <Text style={{ color, fontFamily: 'Outfit_700Bold', fontSize: 11, letterSpacing: 0.5 }}>
-        {labels[urgency]}
-      </Text>
-    </View>
-  );
-};
-
 export const WeatherAdvisoryCard = ({ onOpenDrawer }: WeatherAdvisoryCardProps) => {
   const theme = useThemeColors();
   const styles = getStyles(theme);
 
-  const topAdvisory = weatherAdvisories[0];
   const next2 = WEATHER_FORECAST.slice(0, 3); // Show next 3 days mini preview
-
-  if (!topAdvisory) return null;
-  const urgencyColor = ADVISORY_COLORS[topAdvisory.urgency];
 
   return (
     <View style={styles.card}>
@@ -61,24 +37,6 @@ export const WeatherAdvisoryCard = ({ onOpenDrawer }: WeatherAdvisoryCardProps) 
           </Text>
           <MaterialIcons name="chevron-right" size={16} color={theme.soilBrown} />
         </TouchableOpacity>
-      </View>
-
-      {/* Priority Alert */}
-      <View style={[styles.alertBox, { borderColor: urgencyColor + '40', backgroundColor: urgencyColor + '10' }]}>
-        <View style={styles.alertIconBox}>
-          <MaterialIcons name={topAdvisory.icon as any} size={26} color={urgencyColor} />
-        </View>
-        <View style={{ flex: 1, gap: 6 }}>
-          <View style={styles.alertTitleRow}>
-            <Text style={[styles.alertTitle, { color: theme.textMain }]} numberOfLines={2}>
-              {topAdvisory.title}
-            </Text>
-          </View>
-          <UrgencyBadge urgency={topAdvisory.urgency} />
-          <Text style={styles.alertDetail} numberOfLines={2}>
-            {topAdvisory.detail}
-          </Text>
-        </View>
       </View>
 
       {/* Next 3 days mini-strip */}
@@ -101,16 +59,6 @@ export const WeatherAdvisoryCard = ({ onOpenDrawer }: WeatherAdvisoryCardProps) 
           </View>
         ))}
       </View>
-
-      {/* Top recommended action */}
-      {topAdvisory.actions[0] && (
-        <TouchableOpacity style={styles.actionRow} onPress={onOpenDrawer} activeOpacity={0.8}>
-          <MaterialIcons name="play-circle-filled" size={16} color={urgencyColor} />
-          <Text style={[styles.actionText, { color: urgencyColor }]} numberOfLines={1}>
-            {topAdvisory.actions[0]}
-          </Text>
-        </TouchableOpacity>
-      )}
     </View>
   );
 };

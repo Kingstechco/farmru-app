@@ -25,39 +25,40 @@ export function useThemeColors() {
   return {
     isDark,
     
-    // Core Brand Colors
-    tintGreen: Colors.light.primary,
-    soilBrown: Colors.light.secondary,
+    // Core Brand Colors (Shifted to vibrant modern equivalents)
+    tintGreen: isDark ? '#4ade80' : '#16a34a', // Neon Spring Green / Deep Emerald
+    soilBrown: isDark ? '#fbbf24' : '#d97706', // Rich Gold / Amber
     
-    // Ambient Background Gradients (Muted, earthy off-whites to prevent eye strain)
-    bgGradientStart: isDark ? '#172635' : '#E6E9E6',
-    bgGradientEnd: isDark ? '#1B3526' : '#C7CDC9',
+    // Ambient Background Gradients (Deep, immersive themes)
+    bgGradientStart: isDark ? '#020617' : '#f8fafc', // Ultra-dark slate / Frost white
+    bgGradientEnd: isDark ? '#134e4a' : '#e2e8f0',   // Deep Teal shadow / Pearl grey
     
-    authGradientStart: isDark ? '#111822' : '#EFF1F0',
-    authGradientEnd: isDark ? '#1B3526' : '#BFC6C2',
+    authGradientStart: isDark ? '#020617' : '#f8fafc',
+    authGradientEnd: isDark ? '#0f172a' : '#cbd5e1',
 
     // Core Typography
-    textMain: isDark ? '#FFFFFF' : '#142129', // Deep navy
-    textSub: isDark ? 'rgba(255, 255, 255, 0.6)' : 'rgba(20, 33, 41, 0.65)',
-    textDim: isDark ? 'rgba(255, 255, 255, 0.4)' : 'rgba(20, 33, 41, 0.45)',
+    textMain: isDark ? '#f8fafc' : '#0f172a',
+    textSub: isDark ? 'rgba(248, 250, 252, 0.7)' : 'rgba(15, 23, 42, 0.7)',
+    textDim: isDark ? 'rgba(248, 250, 252, 0.4)' : 'rgba(15, 23, 42, 0.5)',
     
     // Glassmorphism System
-    // Much more opaque for clarity against dimmer background
-    glassBackground: isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(255, 255, 255, 0.85)',
-    glassBackgroundStrong: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.95)',
-    glassBackgroundDarker: isDark ? 'rgba(0, 0, 0, 0.3)' : 'rgba(240, 244, 241, 0.95)',
-    // Brand colored translucent borders to accent panels perfectly
-    glassBorder: isDark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(98, 168, 85, 0.25)', // Tint Green
-    glassBorderStrong: isDark ? 'rgba(255, 255, 255, 0.3)' : 'rgba(193, 154, 92, 0.45)', // Soil Brown
+    // Vastly reduced opacity and border thickness for high-fidelity frost
+    glassBackground: isDark ? 'rgba(15, 23, 42, 0.3)' : 'rgba(255, 255, 255, 0.65)',
+    glassBackgroundStrong: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.85)',
+    glassBackgroundDarker: isDark ? 'rgba(0, 0, 0, 0.45)' : 'rgba(255, 255, 255, 0.95)',
+    
+    // Extremely subtle borders to catch the light, not box the component
+    glassBorder: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(255, 255, 255, 1)',
+    glassBorderStrong: isDark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.06)',
     
     // Blur Views
     blurTint: (isDark ? 'dark' : 'light') as 'dark' | 'light',
     
     // Interactive Elements
-    cardIconBg: isDark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(98, 168, 85, 0.1)', // Subtle tint green
-    inputBackground: isDark ? 'rgba(255, 255, 255, 0.12)' : 'rgba(255, 255, 255, 0.7)',
-    dangerBg: isDark ? 'rgba(235, 127, 127, 0.1)' : 'rgba(239, 68, 68, 0.1)',
-    dangerText: isDark ? '#eb7f7f' : '#DC2626',
+    cardIconBg: isDark ? 'rgba(74, 222, 128, 0.1)' : 'rgba(22, 163, 74, 0.08)',
+    inputBackground: isDark ? 'rgba(15, 23, 42, 0.4)' : 'rgba(255, 255, 255, 0.8)',
+    dangerBg: isDark ? 'rgba(239, 68, 68, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+    dangerText: isDark ? '#f87171' : '#dc2626',
     
     // Graph Analytics
     graphStrokeDark: isDark ? '#2D4537' : '#B1C7BA',

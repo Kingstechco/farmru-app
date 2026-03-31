@@ -30,7 +30,7 @@ const FIELD_GROUPS = [
         history: [38, 40, 41, 43, 47, 44, 42],
         aiDiagnosis: {
           verdict: 'Healthy', color: '#4ade80',
-          message: 'All sensors operating within normal parameters. Gateway link stable. No action required.',
+          message: 'Everything is running smoothly. Connection is strong.',
         },
         alerts: [],
       },
@@ -45,7 +45,7 @@ const FIELD_GROUPS = [
         history: [40, 42, 44, 46, 45, 44, 44],
         aiDiagnosis: {
           verdict: 'Healthy', color: '#4ade80',
-          message: 'Moisture trending stable. Readings consistent with irrigation timing. Battery at 62% — plan replacement in 4 weeks.',
+          message: 'Moisture levels are good. Replace the battery in about a month.',
         },
         alerts: [],
       },
@@ -67,7 +67,7 @@ const FIELD_GROUPS = [
         history: [33, 30, 28, 25, 29, 27, 28],
         aiDiagnosis: {
           verdict: 'Warning', color: '#f59e0b',
-          message: 'Moisture critically low at 28%. Signal dropping — check antenna orientation. Battery at 45%, schedule replacement within 2 weeks.',
+          message: 'Moisture is very low. The signal is weak—check if the antenna is blocked. Battery needs changing in 2 weeks.',
         },
         alerts: ['Low moisture detected', 'Signal degraded'],
       },
@@ -83,7 +83,7 @@ const FIELD_GROUPS = [
         history: [14.0, 14.1, 13.8, 14.2, 14.5, 14.3, 14.2],
         aiDiagnosis: {
           verdict: 'Healthy', color: '#4ade80',
-          message: 'Valve cycling correctly. Flow rate nominal at 14.2 L/min. Pressure stable at 2.1 bar. 42 irrigation cycles completed.',
+          message: 'Water is flowing normally. Pressure is good.',
         },
         alerts: [],
       },
@@ -105,7 +105,7 @@ const FIELD_GROUPS = [
         history: [20, 21, 22, 23, 22, 22, 22],
         aiDiagnosis: {
           verdict: 'Excellent', color: '#4ade80',
-          message: 'Weather station fully operational. All environmental sensors calibrated. Solar charging maintaining near-full battery.',
+          message: 'Everything is working perfectly. The sun is keeping the battery full.',
         },
         alerts: [],
       },
@@ -120,7 +120,7 @@ const FIELD_GROUPS = [
         history: [0, 0, 0, 0, 0, 0, 0],
         aiDiagnosis: {
           verdict: 'Critical', color: '#ef4444',
-          message: 'Node offline for 4h. Battery critically low at 12%. Immediate on-site inspection required — confirm power supply and antenna integrity.',
+          message: "This device hasn't connected in 4 hours. Battery is almost dead. Please check it in the field.",
         },
         alerts: ['Node offline', 'Critical battery', 'No signal'],
       },
@@ -382,9 +382,9 @@ export default function DevicesScreen() {
 
   const [activeField, setActiveField] = useState<string | null>(null);
 
-  const totalNodes = FIELD_GROUPS.flatMap(g => g.nodes).length;
-  const onlineNodes = FIELD_GROUPS.flatMap(g => g.nodes).filter(n => n.status === 'Online').length;
-  const criticalNodes = FIELD_GROUPS.flatMap(g => g.nodes).filter(n => n.alerts.length > 0).length;
+  const totalNodes = FIELD_GROUPS.flatMap((g: any) => g.nodes).length;
+  const onlineNodes = FIELD_GROUPS.flatMap((g: any) => g.nodes).filter((n: any) => n.status === 'Online').length;
+  const criticalNodes = FIELD_GROUPS.flatMap((g: any) => g.nodes).filter((n: any) => n.alerts.length > 0).length;
 
   const visibleGroups = activeField
     ? FIELD_GROUPS.filter(g => g.fieldKey === activeField)
@@ -441,7 +441,7 @@ export default function DevicesScreen() {
             <Pressable
               onPress={() => setActiveField(null)}
               style={({ pressed }) => ({
-                paddingHorizontal: 14, paddingVertical: 7, borderRadius: 20,
+                paddingHorizontal: 16, paddingVertical: 12, borderRadius: 20,
                 backgroundColor: !activeField ? theme.soilBrown + '25' : theme.glassBackground,
                 borderWidth: 1.5, borderColor: !activeField ? theme.soilBrown + '60' : theme.glassBorder,
                 transform: [{ scale: pressed ? 0.96 : 1 }],
@@ -454,7 +454,7 @@ export default function DevicesScreen() {
                 key={g.fieldKey}
                 onPress={() => setActiveField(activeField === g.fieldKey ? null : g.fieldKey)}
                 style={({ pressed }) => ({
-                  paddingHorizontal: 14, paddingVertical: 7, borderRadius: 20,
+                  paddingHorizontal: 16, paddingVertical: 12, borderRadius: 20,
                   backgroundColor: activeField === g.fieldKey ? g.color + '25' : theme.glassBackground,
                   borderWidth: 1.5, borderColor: activeField === g.fieldKey ? g.color + '60' : theme.glassBorder,
                   transform: [{ scale: pressed ? 0.96 : 1 }],

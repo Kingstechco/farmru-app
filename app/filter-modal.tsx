@@ -135,7 +135,10 @@ const getStyles = (theme: ReturnType<typeof useThemeColors>) => StyleSheet.creat
     fontSize: 22,
   },
   closeButton: {
-    padding: 8,
+    width: 44,
+    height: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
     backgroundColor: theme.cardIconBg,
     borderRadius: 16,
   },
@@ -153,7 +156,8 @@ const getStyles = (theme: ReturnType<typeof useThemeColors>) => StyleSheet.creat
     borderWidth: 1,
     borderColor: theme.glassBorder,
     borderRadius: 16,
-    padding: 12,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
     marginBottom: 12,
   },
   filterRowActive: {

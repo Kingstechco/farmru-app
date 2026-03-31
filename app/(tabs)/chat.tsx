@@ -37,9 +37,9 @@ const TOPIC_CATEGORIES = [
     "When is the best window for pesticide application?",
   ]},
   { id: 'report', label: '📊 AI Report', color: '#a78bfa', suggestions: [
-    "Generate a predictive yield forecast for this month",
-    "Summarize all active farm advisories",
-    "Recommend an irrigation schedule for the next 7 days",
+    "Show me this month's harvest forecast",
+    "What are my main tasks currently?",
+    "Recommend a watering schedule for the next 7 days",
   ]},
 ];
 
@@ -90,9 +90,9 @@ const buildWeatherGreeting = (): string => {
 };
 
 const LATEST_SUGGESTIONS = [
-  "Analyze irrigation cycle vs temp",
-  "Recommend harvest timeline",
-  "Generate predictive yield report"
+  "How does temperature affect my watering?",
+  "When is the best time to harvest?",
+  "Show me my field score"
 ];
 
 export default function ChatScreen() {
@@ -140,7 +140,7 @@ export default function ChatScreen() {
 
     // Generate context-aware AI response based on weather and query keywords
     setTimeout(() => {
-      let aiText = "Based on your recent sensor logs, I advise triggering the smart valve briefly to lower the ambient soil temperature ahead of the upcoming heatwave.";
+      let aiText = "Based on your recent sensor logs, I think you should turn on the water briefly to cool the soil before the heatwave hits today.";
       
       const lowerQuery = query.toLowerCase();
       const heavyRainDay = WEATHER_FORECAST.find(d => d.rainMm >= 20);
@@ -163,8 +163,8 @@ export default function ChatScreen() {
         }
       } else if (lowerQuery.includes('advisory') || lowerQuery.includes('critical') || lowerQuery.includes('alert')) {
         aiText = topAdvisory 
-          ? `Your top priority advisory: "${topAdvisory.title}". ${topAdvisory.detail} Recommended actions: ${topAdvisory.actions.slice(0, 2).join('; ')}.`
-          : 'No critical advisories at this time. Check back for updates.';
+          ? `Your top priority right now: "${topAdvisory.title}". ${topAdvisory.detail} Here's what you should do: ${topAdvisory.actions.slice(0, 2).join('; ')}.`
+          : 'Everything looks good right now. Check back later!';
       } else if (lowerQuery.includes('harvest') || lowerQuery.includes('spray')) {
         const sprayWindow = WEATHER_FORECAST.find(d => d.windKph < 15 && d.rainProbability < 20);
         aiText = sprayWindow

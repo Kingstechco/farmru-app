@@ -22,7 +22,13 @@ const GlassCard = ({ children, style }: { children: React.ReactNode, style?: any
   const theme = useThemeColors();
   const styles = getStyles(theme);
   return (
-    <View style={[styles.glassCard, style]}>
+    <View style={[styles.glassCard, style, {
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 10 },
+      shadowOpacity: theme.isDark ? 0.35 : 0.08,
+      shadowRadius: 20,
+      elevation: 8,
+    }]}>
       <BlurView intensity={theme.isDark ? 20 : 60} tint={theme.blurTint} style={StyleSheet.absoluteFill} />
       <View style={styles.glassContent}>
         {children}
@@ -35,19 +41,24 @@ const GlassCard = ({ children, style }: { children: React.ReactNode, style?: any
 interface KPICardProps {
   icon: string; iconColor: string; iconBg: string;
   value: string; label: string; subText?: string;
-  detail: string; recommendation: string; optimalRange: string;
+  detail: string; optimalRange: string;
 }
 const InteractiveKPICard = (p: KPICardProps) => {
   const theme = useThemeColors();
   const [open, setOpen] = useState(false);
   const anim = useRef(new Animated.Value(0)).current;
   const scale = useRef(new Animated.Value(1)).current;
+  const contentHeight = useRef(0);
 
   const toggle = () => {
     Animated.spring(anim, { toValue: open ? 0 : 1, useNativeDriver: false, tension: 60, friction: 10 }).start();
     setOpen(o => !o);
   };
-  const expandH = anim.interpolate({ inputRange: [0, 1], outputRange: [0, 120] });
+
+  const expandH = anim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, contentHeight.current || 160],
+  });
 
   return (
     <Pressable
@@ -61,7 +72,12 @@ const InteractiveKPICard = (p: KPICardProps) => {
         borderRadius: 20, overflow: 'hidden', borderWidth: 1.5,
         borderColor: open ? p.iconColor + '50' : theme.glassBorder,
         backgroundColor: open ? p.iconColor + '08' : theme.glassBackground,
-        transform: [{ scale }], marginBottom: 12,
+        transform: [{ scale }], marginBottom: 16,
+        shadowColor: theme.isDark ? '#000' : '#0f172a',
+        shadowOffset: { width: 0, height: open ? 12 : 6 },
+        shadowOpacity: open ? (theme.isDark ? 0.4 : 0.08) : (theme.isDark ? 0.2 : 0.04),
+        shadowRadius: open ? 24 : 12,
+        elevation: open ? 8 : 4,
       }]}>
         <BlurView intensity={theme.isDark ? 20 : 60} tint={theme.blurTint} style={StyleSheet.absoluteFill} />
         <View style={{ padding: 16, flexDirection: 'row', alignItems: 'center', gap: 14 }}>
@@ -77,18 +93,33 @@ const InteractiveKPICard = (p: KPICardProps) => {
             <MaterialIcons name={open ? 'expand-less' : 'expand-more'} size={18} color={p.iconColor} />
           </View>
         </View>
+
+        {/* Animated expand panel */}
         <Animated.View style={{ height: expandH, overflow: 'hidden' }}>
+          {/* Hidden pre-measure layer — always rendered off-screen so we know the true height */}
+          <View
+            style={{ position: 'absolute', opacity: 0, pointerEvents: 'none' }}
+            onLayout={e => { contentHeight.current = e.nativeEvent.layout.height; }}
+          >
+            <View style={{ paddingHorizontal: 16, paddingBottom: 14, gap: 6 }}>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                <Text style={{ fontFamily: 'Outfit_500Medium', fontSize: 11, color: theme.textDim }}>Optimal Range</Text>
+                <Text style={{ fontFamily: 'Outfit_700Bold', fontSize: 11, color: p.iconColor }}>{p.optimalRange}</Text>
+              </View>
+              <Text style={{ fontFamily: 'Outfit_400Regular', fontSize: 12, color: theme.textSub, lineHeight: 17 }}>{p.detail}</Text>
+            </View>
+          </View>
+
+          {/* Visible content */}
           <View style={{ paddingHorizontal: 16, paddingBottom: 14, gap: 6 }}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
               <Text style={{ fontFamily: 'Outfit_500Medium', fontSize: 11, color: theme.textDim }}>Optimal Range</Text>
               <Text style={{ fontFamily: 'Outfit_700Bold', fontSize: 11, color: p.iconColor }}>{p.optimalRange}</Text>
             </View>
             <Text style={{ fontFamily: 'Outfit_400Regular', fontSize: 12, color: theme.textSub, lineHeight: 17 }}>{p.detail}</Text>
-            <View style={{ backgroundColor: p.iconColor + '12', borderRadius: 8, padding: 8, marginTop: 2 }}>
-              <Text style={{ fontFamily: 'Outfit_600SemiBold', fontSize: 11, color: p.iconColor }}>💡 {p.recommendation}</Text>
-            </View>
           </View>
         </Animated.View>
+
       </Animated.View>
     </Pressable>
   );
@@ -127,7 +158,7 @@ export default function DashboardScreen() {
       <View style={{ paddingTop: insets.top, flex: 1 }}>
         
         {/* Floating Glass Header */}
-        <View style={[styles.header, { paddingTop: insets.top + (Platform.OS === 'web' ? 24 : 16) }]}>
+        <View style={[styles.header, { paddingTop: Platform.OS === 'web' ? 20 : 12 }]}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}>
             <TouchableOpacity onPress={() => router.push('/menu')} activeOpacity={0.8}>
               <View style={[styles.avatarBoxTop, { backgroundColor: SOIL_BROWN }]}>
@@ -172,53 +203,57 @@ export default function DashboardScreen() {
         </View>
 
         <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-          
-          {/* AI Insight Glass Card */}
-          <GlassCard style={styles.insightCard}>
-            <View style={styles.insightHeader}>
-              <View style={[styles.insightIconWrapper, { backgroundColor: SOIL_BROWN }]}>
-                <MaterialIcons name="auto-awesome" size={20} color="#FFF" />
+
+          {/* Action Center Entry */}
+          <TouchableOpacity 
+            style={{ 
+              flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', 
+              backgroundColor: theme.tintGreen + '10', padding: 16, borderRadius: 20, 
+              marginBottom: 24, borderWidth: 1, borderColor: theme.tintGreen + '30' 
+            }}
+            activeOpacity={0.8}
+            onPress={() => router.push('/action-center')}
+          >
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}>
+              <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: theme.tintGreen + '20', alignItems: 'center', justifyContent: 'center' }}>
+                <MaterialIcons name="fact-check" size={20} color={theme.tintGreen} />
               </View>
-              <Text style={styles.insightTitle}>Farmru AI Insight</Text>
+              <View>
+                <Text style={{ fontFamily: 'Outfit_700Bold', fontSize: 16, color: theme.textMain, marginBottom: 2 }}>Action Center</Text>
+                <Text style={{ fontFamily: 'Outfit_500Medium', fontSize: 13, color: theme.tintGreen }}>2 pending directives</Text>
+              </View>
             </View>
-            <Text style={styles.insightBody}>
-              AI detected multiple critical operations pending for your fields. Open the Action Center to orchestrate and apply recommendations.
-            </Text>
-            <TouchableOpacity style={[styles.insightButton, { backgroundColor: TINT_GREEN }]} activeOpacity={0.7} onPress={() => router.push('/action-center')}>
-              <Text style={styles.insightButtonText}>View Action Plan</Text>
-              <MaterialIcons name="arrow-forward" size={18} color="#FFF" />
-            </TouchableOpacity>
-          </GlassCard>
+            <View style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: theme.glassBackground, alignItems: 'center', justifyContent: 'center' }}>
+               <MaterialIcons name="chevron-right" size={18} color={theme.tintGreen} />
+            </View>
+          </TouchableOpacity>
 
           {/* Weather Advisory Card */}
           <WeatherAdvisoryCard onOpenDrawer={() => setIsWeatherOpen(true)} />
 
           {/* KPI Interactive Grid */}
           <Text style={styles.sectionTitle}>Environment Overview</Text>
-          <Text style={{ fontFamily: 'Outfit_400Regular', fontSize: 12, color: theme.textDim, marginBottom: 14, marginTop: -10 }}>Tap or hover any card to see full context and AI recommendation.</Text>
+          <Text style={{ fontFamily: 'Outfit_400Regular', fontSize: 12, color: theme.textDim, marginBottom: 14, marginTop: -10 }}>Tap or hover any card to see full context.</Text>
           <InteractiveKPICard
             icon="water-drop" iconColor="#38bdf8" iconBg="rgba(56,189,248,0.15)"
             value={`${28 + moistureBoost}%`} label="Soil Moisture"
-            subText={moistureBoost > 0 ? 'Projected after irrigation' : '⚠ Too dry. Needs water.'}
+            subText={moistureBoost > 0 ? 'Projected after watering' : '⚠ Too dry. Needs water.'}
             optimalRange="35–55%"
-            detail={`Current moisture is ${28 + moistureBoost}%. Maize roots need consistent 35–55% to absorb nitrogen efficiently. Below 30% causes wilting; above 60% risks root rot.`}
-            recommendation={moistureBoost > 0 ? 'Irrigation scheduled. Monitor after Thursday rain to avoid overwatering.' : 'Irrigate Field 2 immediately. Target 40% moisture before sundown.'}
+            detail={`Current moisture is ${28 + moistureBoost}%. Maize needs consistent 35–55% moisture to grow well. Below 30% causes the plants to dry up, but above 60% can rot the roots.`}
           />
           <InteractiveKPICard
             icon="thermostat" iconColor="#f87171" iconBg="rgba(248,113,113,0.15)"
             value="24°C" label="Ambient Temperature"
             subText="Stable · within range"
             optimalRange="20–30°C"
-            detail="Ambient temperature is ideal for crop growth. Prolonged exposure above 33°C risks heat stress on tomato flowering and maize pollination."
-            recommendation="No action needed. If forecast exceeds 32°C, deploy shade netting on Field 2."
+            detail="The temperature is good for plant growth. If it stays above 33°C for a long time, it can damage flowering tomatoes and maize."
           />
           <InteractiveKPICard
             icon="air" iconColor="#a78bfa" iconBg="rgba(167,139,250,0.15)"
             value="14 km/h" label="Wind Speed"
             subText="Moderate · good for drying"
             optimalRange="< 20 km/h"
-            detail="Wind at 14 km/h helps dry leaf surfaces after irrigation, reducing fungal disease risk. Above 25 km/h can cause spray drift and lodging in tall crops."
-            recommendation="Good spray conditions today. Avoid herbicide application if wind exceeds 20 km/h."
+            detail="Wind at 14 km/h helps dry the leaves after watering, keeping mold away. If the wind goes over 25 km/h, do not spray chemicals as they will blow away."
           />
 
           {/* Soil Vitality Card */}
@@ -310,7 +345,7 @@ export default function DashboardScreen() {
             <GlassCard style={{ marginBottom: 0 }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}>
                 <View style={[styles.iconCircle, { backgroundColor: 'rgba(255, 215, 0, 0.12)', marginBottom: 0 }]}>
-                   <MaterialIcons name="local-blooming" size={24} color="#FFD700" />
+                   <MaterialIcons name="local-florist" size={24} color="#FFD700" />
                 </View>
                 <View style={{ flex: 1 }}>
                   <Text style={styles.kpiLabel}>Current Health Streak</Text>
@@ -449,7 +484,7 @@ const getStyles = (theme: ReturnType<typeof useThemeColors>) => StyleSheet.creat
     justifyContent: 'space-between', 
     alignItems: 'center', 
     paddingHorizontal: 24,
-    paddingBottom: 20,
+    paddingBottom: 10,
     borderBottomWidth: 1,
     borderBottomColor: theme.glassBorder,
     backgroundColor: theme.isDark ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.4)',
@@ -473,15 +508,14 @@ const getStyles = (theme: ReturnType<typeof useThemeColors>) => StyleSheet.creat
     color: '#FFF',
   },
   greetingHeader: { 
-    fontSize: 15, 
+    fontSize: 12, 
     color: theme.textSub, 
     fontFamily: 'Outfit_500Medium' 
   },
   farmerName: { 
-    fontSize: 28, 
+    fontSize: 20, 
     color: theme.textMain, 
     fontFamily: 'Outfit_700Bold', 
-    marginTop: 4 
   },
   weatherBadgeContainer: { 
     flexDirection: 'row', 

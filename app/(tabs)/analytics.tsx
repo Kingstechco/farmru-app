@@ -373,9 +373,10 @@ export default function AnalyticsScreen() {
         <TouchableOpacity
           style={{ flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: theme.soilBrown + '20', paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20 }}
           activeOpacity={0.8}
+          onPress={() => router.push('/action-center')}
         >
-          <MaterialIcons name="auto-awesome" size={14} color={theme.soilBrown} />
-          <Text style={{ fontFamily: 'Outfit_700Bold', fontSize: 12, color: theme.soilBrown }}>AI Insights</Text>
+          <MaterialIcons name="fact-check" size={14} color={theme.soilBrown} />
+          <Text style={{ fontFamily: 'Outfit_700Bold', fontSize: 12, color: theme.soilBrown }}>Action Center</Text>
         </TouchableOpacity>
       </View>
 
@@ -424,7 +425,7 @@ export default function AnalyticsScreen() {
 
         {/* Yield Trajectory */}
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-          <Text style={styles.sectionHeading}>Yield Trajectory (t/ha)</Text>
+          <Text style={styles.sectionHeading}>Harvest Trends (t/ha)</Text>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
             <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: theme.tintGreen }} />
             <Text style={{ color: theme.textSub, fontFamily: 'Outfit_500Medium', fontSize: 11 }}>Tons/Ha</Text>
@@ -467,7 +468,7 @@ export default function AnalyticsScreen() {
         </View>
 
         {/* Irrigation */}
-        <Text style={[styles.sectionHeading, { marginTop: 8 }]}>Irrigation Utilization</Text>
+        <Text style={[styles.sectionHeading, { marginTop: 8 }]}>Water Usage</Text>
         <Text style={styles.sectionDesc}>Tap or hover bars to see exact usage per day. AI optimizations highlighted.</Text>
         <View style={styles.glassCard}>
           <BlurView intensity={theme.isDark ? 40 : 70} tint={theme.blurTint} style={StyleSheet.absoluteFill} />
@@ -508,12 +509,12 @@ export default function AnalyticsScreen() {
               <View style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: theme.soilBrown + '20', alignItems: 'center', justifyContent: 'center' }}>
                 <MaterialIcons name="auto-awesome" size={18} color={theme.soilBrown} />
               </View>
-              <Text style={{ fontFamily: 'Outfit_700Bold', fontSize: 16, color: theme.textMain }}>AI Predictive Summary</Text>
+              <Text style={{ fontFamily: 'Outfit_700Bold', fontSize: 16, color: theme.textMain }}>Smart Summary</Text>
             </View>
             {[
-              { icon: 'trending-up', text: 'Yield forecast +12% vs last quarter if phosphorus is replenished within 7 days.', color: theme.tintGreen },
-              { icon: 'water-drop', text: 'Rain on Thursday will offset 38L of irrigation — AI will auto-suspend sprinklers.', color: '#38bdf8' },
-              { icon: 'warning', text: 'Phosphorus at critically low 30% — schedule fertilizer application before Wednesday rain.', color: '#f59e0b' },
+              { icon: 'trending-up', text: 'Your harvest could grow by 12% if you add phosphorus this week.', color: theme.tintGreen },
+              { icon: 'water-drop', text: 'Rain on Thursday will save 38L of water. The system will skip watering.', color: '#38bdf8' },
+              { icon: 'warning', text: "Phosphorus is very low. Add fertilizer before Wednesday's rain.", color: '#f59e0b' },
             ].map((item, i) => (
               <View key={i} style={{ flexDirection: 'row', gap: 12, paddingVertical: 12, borderBottomWidth: i < 2 ? 1 : 0, borderBottomColor: theme.glassBorder }}>
                 <View style={{ width: 28, height: 28, borderRadius: 14, backgroundColor: item.color + '15', alignItems: 'center', justifyContent: 'center' }}>

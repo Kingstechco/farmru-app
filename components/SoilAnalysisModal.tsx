@@ -22,7 +22,7 @@ interface SoilAnalysisModalProps {
   onClose: () => void;
 }
 
-type Mode = 'select' | 'iot' | 'manual';
+type Mode = 'select' | 'iot' | 'manual' | 'success';
 
 export const SoilAnalysisModal = ({ visible, onClose }: SoilAnalysisModalProps) => {
   const theme = useThemeColors();
@@ -30,6 +30,7 @@ export const SoilAnalysisModal = ({ visible, onClose }: SoilAnalysisModalProps) 
   const [mode, setMode] = useState<Mode>('select');
   const [isScanning, setIsScanning] = useState(false);
   const [scanProgress, setScanProgress] = useState(0);
+  const [successMsg, setSuccessMsg] = useState('');
   
   // Manual form state
   const [n, setN] = useState('45');
@@ -42,6 +43,7 @@ export const SoilAnalysisModal = ({ visible, onClose }: SoilAnalysisModalProps) 
       setMode('select');
       setIsScanning(false);
       setScanProgress(0);
+      setSuccessMsg('');
     }
   }, [visible]);
 
@@ -77,7 +79,9 @@ export const SoilAnalysisModal = ({ visible, onClose }: SoilAnalysisModalProps) 
       icon: 'sync', 
       color: theme.tintGreen 
     });
-    setTimeout(onClose, 800);
+    setSuccessMsg('Sensors Synchronized');
+    setMode('success');
+    setTimeout(onClose, 1200);
   };
 
   const handleManualSubmit = () => {
@@ -89,12 +93,14 @@ export const SoilAnalysisModal = ({ visible, onClose }: SoilAnalysisModalProps) 
       ph: parseFloat(ph)
     });
     store.addActivity({ 
-      title: 'Lab Results Logged', 
+      title: 'Lab Results Saved', 
       subtitle: 'Nutrient profiles updated', 
       icon: 'biotech', 
       color: theme.soilBrown 
     });
-    onClose();
+    setSuccessMsg('Lab Results Saved');
+    setMode('success');
+    setTimeout(onClose, 1200);
   };
 
   return (
@@ -132,8 +138,8 @@ export const SoilAnalysisModal = ({ visible, onClose }: SoilAnalysisModalProps) 
                   <MaterialIcons name="sensors" size={28} color="#38bdf8" />
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Text style={styles.optionTitle}>IoT Rapid Scan</Text>
-                  <Text style={styles.optionSub}>Sync with Field Nodes in real-time</Text>
+                  <Text style={styles.optionTitle}>Quick Sensor Scan</Text>
+                  <Text style={styles.optionSub}>Get fresh data directly from your field sensors</Text>
                 </View>
                 <MaterialIcons name="chevron-right" size={24} color={theme.textDim} />
               </TouchableOpacity>
@@ -156,7 +162,7 @@ export const SoilAnalysisModal = ({ visible, onClose }: SoilAnalysisModalProps) 
                <View style={styles.scanAnimationBox}>
                  <ActivityIndicator size="large" color={theme.tintGreen} />
                  <Text style={[styles.scanText, { marginTop: 24 }]}>
-                   {scanProgress < 1 ? 'Handshaking with Nodes...' : 'Syncing Tactical Data...'}
+                   {scanProgress < 1 ? 'Connecting to sensors...' : 'Downloading soil data...'}
                  </Text>
                  <View style={styles.progressBarBg}>
                    <View style={[styles.progressBarFill, { width: `${scanProgress * 100}%`, backgroundColor: theme.tintGreen }]} />
@@ -221,6 +227,17 @@ export const SoilAnalysisModal = ({ visible, onClose }: SoilAnalysisModalProps) 
             </ScrollView>
           )}
 
+          {mode === 'success' && (
+            <View style={{ paddingVertical: 40, alignItems: 'center', justifyContent: 'center' }}>
+              <View style={{ width: 80, height: 80, borderRadius: 40, backgroundColor: theme.tintGreen + '20', alignItems: 'center', justifyContent: 'center', marginBottom: 20 }}>
+                <MaterialIcons name="check" size={48} color={theme.tintGreen} />
+              </View>
+              <Text style={{ fontFamily: 'Outfit_700Bold', fontSize: 22, color: theme.textMain, textAlign: 'center' }}>
+                {successMsg}
+              </Text>
+            </View>
+          )}
+
         </View>
       </View>
     </Modal>
@@ -257,7 +274,10 @@ const getStyles = (theme: any) => StyleSheet.create({
     color: theme.textMain,
   },
   closeBtn: {
-    padding: 8,
+    width: 44,
+    height: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
     borderRadius: 12,
     backgroundColor: theme.cardIconBg,
   },
@@ -265,11 +285,11 @@ const getStyles = (theme: any) => StyleSheet.create({
     zIndex: 1,
   },
   description: {
-    fontSize: 14,
+    fontSize: 15,
     color: theme.textSub,
     fontFamily: 'Outfit_400Regular',
     marginBottom: 24,
-    lineHeight: 20,
+    lineHeight: 22,
   },
   optionCard: {
     flexDirection: 'row',
@@ -295,10 +315,11 @@ const getStyles = (theme: any) => StyleSheet.create({
     color: theme.textMain,
   },
   optionSub: {
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: 'Outfit_400Regular',
     color: theme.textSub,
     marginTop: 2,
+    lineHeight: 18,
   },
   scanBody: {
     paddingVertical: 32,
@@ -347,7 +368,7 @@ const getStyles = (theme: any) => StyleSheet.create({
     gap: 8,
   },
   inputLabel: {
-    fontSize: 12,
+    fontSize: 14,
     fontFamily: 'Outfit_500Medium',
     color: theme.textSub,
   },
@@ -374,8 +395,10 @@ const getStyles = (theme: any) => StyleSheet.create({
     fontSize: 16,
   },
   backBtn: {
-    paddingVertical: 12,
+    paddingVertical: 14,
+    paddingHorizontal: 24,
     alignItems: 'center',
+    justifyContent: 'center',
     marginTop: 8,
   },
   backBtnText: {

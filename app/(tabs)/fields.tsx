@@ -28,29 +28,25 @@ const FIELD_DATA = {
         value: '42%', raw: 42, unit: '%',
         optimal: '35–55%', trend: '+2% this week',
         icon: 'water-drop', color: '#38bdf8',
-        context: 'Moisture is within the ideal range for maize. Roots are actively absorbing water without risk of waterlogging.',
-        recommendation: 'No irrigation needed in the next 48h. Monitor after Thursday rain.',
+        context: 'Moisture is 42%, which is within the ideal 35–55% range for maize. Roots are actively absorbing water without risk of root rot.',
       },
       temp: {
         value: '19°C', raw: 19, unit: '°C',
         optimal: '15–25°C', trend: 'Stable',
         icon: 'thermostat', color: '#f87171',
-        context: 'Soil temperature is optimal for maize root development. Germination and nutrient uptake are both maximised.',
-        recommendation: 'No action required. Mulch if temperature drops below 15°C.',
+        context: 'Soil temperature is 19°C. This is optimal for maize root development, maximizing germination and nutrient uptake.',
       },
       ph: {
         value: '6.8', raw: 6.8, unit: 'pH',
         optimal: '6.0–7.0', trend: 'Stable',
         icon: 'science', color: '#c1a06a',
-        context: 'pH is perfectly balanced for nutrient availability. Both macro and micro nutrients are fully soluble at this level.',
-        recommendation: 'Maintain current lime application cycle. Re-test in 4 weeks.',
+        context: 'pH level is 6.8. This is perfectly balanced for nutrient availability, ensuring macro and micro nutrients are fully soluble.',
       },
       health: {
         value: 'Good', raw: 80, unit: 'score',
         optimal: 'Excellent = 90+', trend: '↑ improving',
         icon: 'eco', color: '#4ade80',
-        context: 'Crop health scored 80/100 by the AI sensor net. Canopy coverage, leaf colour, and stem thickness are all within normal range.',
-        recommendation: 'Phosphorus boost within 14 days will lift score into Excellent.',
+        context: 'Crop health score is 80 out of 100. Canopy coverage, leaf colour, and stem thickness are all within the normal range.',
       },
     },
     npk: { n: { val: 12, max: 20 }, p: { val: 8, max: 20 }, k: { val: 14, max: 20 } },
@@ -61,9 +57,9 @@ const FIELD_DATA = {
       milestones: ['Germination ✓', 'Seedling ✓', 'Vegetative ←', 'Tasseling', 'Grain Fill', 'Maturity'],
     },
     aiAdvisories: [
-      { icon: 'check-circle', color: '#4ade80', text: 'Optimal irrigation schedule active — no manual watering required this week.' },
-      { icon: 'info', color: '#38bdf8', text: 'Vegetative stage: apply foliar nitrogen spray in next 7 days to boost canopy growth.' },
-      { icon: 'warning', color: '#f59e0b', text: 'Phosphorus is borderline (8 mg/kg). Consider 20-10-10 blend before rainfall on Thursday.' },
+      { icon: 'check-circle', color: '#4ade80', text: 'Irrigation is optimal. No manual watering is required this week.' },
+      { icon: 'info', color: '#38bdf8', text: 'Vegetative stage active. Apply nitrogen fertilizer in the next 7 days.' },
+      { icon: 'warning', color: '#f59e0b', text: 'Phosphorus is borderline at 8 mg/kg. Apply 20-10-10 fertilizer blend before Thursday\'s rainfall.' },
     ],
   },
   'Field 2': {
@@ -75,29 +71,25 @@ const FIELD_DATA = {
         value: '28%', raw: 28, unit: '%',
         optimal: '35–55%', trend: '−4% this week',
         icon: 'water-drop', color: '#38bdf8',
-        context: 'Moisture is below optimal at 28%. Tomatoes in flowering stage need consistent moisture to avoid blossom drop.',
-        recommendation: 'Irrigate today — target 40% soil moisture. Increase frequency to twice daily.',
+        context: 'Moisture is critically low at 28%. Tomatoes in the flowering stage need consistent 35–55% moisture to prevent blossom drop.',
       },
       temp: {
         value: '24°C', raw: 24, unit: '°C',
         optimal: '20–28°C', trend: '+3°C today',
         icon: 'thermostat', color: '#f87171',
-        context: 'Temperature is approaching the upper threshold. Prolonged heat above 28°C can cause pollen sterility in tomatoes.',
-        recommendation: 'Install shade netting if temperature exceeds 28°C over the next 3 days.',
+        context: 'Temperature is 24°C and approaching the 28°C threshold. Prolonged heat above 28°C can cause pollen sterility in tomatoes.',
       },
       ph: {
         value: '6.2', raw: 6.2, unit: 'pH',
         optimal: '5.5–6.8', trend: 'Slightly low',
         icon: 'science', color: '#c1a06a',
-        context: 'pH at 6.2 is acceptable, though slightly towards the acidic end. Calcium and magnesium uptake may be marginally reduced.',
-        recommendation: 'Apply agricultural lime at 0.5t/ha in the next irrigation cycle.',
+        context: 'pH is 6.2, which is acceptable but slightly acidic. At this level, calcium and magnesium uptake may be marginally reduced.',
       },
       health: {
         value: 'Fair', raw: 55, unit: 'score',
         optimal: 'Good = 70+', trend: '↓ declining',
         icon: 'eco', color: '#fbbf24',
-        context: 'Health score 55/100. AI detected lower-than-normal chlorophyll index due to water stress and low phosphorus availability.',
-        recommendation: 'Restore moisture first, then apply foliar phosphate spray for fast absorption.',
+        context: 'Health score is 55 out of 100. The chlorophyll index is low due to water stress and restricted phosphorus availability.',
       },
     },
     npk: { n: { val: 8, max: 20 }, p: { val: 4, max: 20 }, k: { val: 18, max: 20 } },
@@ -108,9 +100,9 @@ const FIELD_DATA = {
       milestones: ['Germination ✓', 'Seedling ✓', 'Vegetative ✓', 'Flowering ←', 'Fruit Set', 'Harvest'],
     },
     aiAdvisories: [
-      { icon: 'warning', color: '#ef4444', text: 'Soil moisture critical at 28% — blossom drop risk in next 24h without irrigation.' },
-      { icon: 'warning', color: '#f59e0b', text: 'Phosphorus deficiency (4 mg/kg). Apply liquid phosphate fertiliser during next watering.' },
-      { icon: 'info', color: '#38bdf8', text: 'High potassium at 18 mg/kg is beneficial during flowering stage — no K supplement needed.' },
+      { icon: 'warning', color: '#ef4444', text: 'Soil moisture is critical at 28%. Water the field today to prevent blossom drop.' },
+      { icon: 'warning', color: '#f59e0b', text: 'Phosphorus is deficient at 4 mg/kg. Add phosphate fertilizer during the next watering cycle.' },
+      { icon: 'info', color: '#38bdf8', text: 'Potassium is high at 18 mg/kg. Do not apply potassium supplements during this stage.' },
     ],
   },
   'Field 3': {
@@ -122,29 +114,25 @@ const FIELD_DATA = {
         value: '55%', raw: 55, unit: '%',
         optimal: '40–60%', trend: '+8% this week',
         icon: 'water-drop', color: '#38bdf8',
-        context: 'Moisture at 55% is within range but rising. Upcoming 38mm rain event could push into waterlogging territory.',
-        recommendation: 'Pause irrigation now. Ensure drainage channels are clear before Thursday rain.',
+        context: 'Moisture is 55%, which is within range but rising. With 38mm of rain expected, the field may enter waterlogging territory.',
       },
       temp: {
         value: '17°C', raw: 17, unit: '°C',
         optimal: '15–20°C', trend: 'Stable',
         icon: 'thermostat', color: '#f87171',
-        context: 'Excellent soil temperature for potato bulking. Starch accumulation is highest within 15–20°C range.',
-        recommendation: 'Ideal conditions — no action needed. Maintain consistent overnight temperature.',
+        context: 'Soil temperature is 17°C. This is excellent for potato bulking, as starch accumulation is highest within the 15–20°C range.',
       },
       ph: {
         value: '7.1', raw: 7.1, unit: 'pH',
         optimal: '5.0–6.5', trend: '⚠ High',
         icon: 'science', color: '#c1a06a',
-        context: 'pH at 7.1 is above the ideal range for potatoes. This alkaline level reduces availability of iron, manganese, and boron.',
-        recommendation: 'Apply elemental sulfur at 0.5 kg/m² to lower pH. Re-test in 3 weeks.',
+        context: 'pH is 7.1, which is too alkaline for potatoes. Alkaline soil reduces the availability of iron, manganese, and boron.',
       },
       health: {
         value: 'Excellent', raw: 92, unit: 'score',
         optimal: 'Excellent = 90+', trend: '↑ strong',
         icon: 'eco', color: '#4ade80',
-        context: 'Health score 92/100. Maturation stage is progressing well. AI detects good tuber density from sensor vibration patterns.',
-        recommendation: 'Harvest window opens in 10 days. Scout for late blight symptoms before harvest.',
+        context: 'Health score is 92 out of 100. Maturation is progressing well, and tuber density vibration patterns are strong.',
       },
     },
     npk: { n: { val: 15, max: 20 }, p: { val: 12, max: 20 }, k: { val: 10, max: 20 } },
@@ -155,9 +143,9 @@ const FIELD_DATA = {
       milestones: ['Germination ✓', 'Sprout ✓', 'Vegetative ✓', 'Bulking ✓', 'Maturation ←', 'Harvest'],
     },
     aiAdvisories: [
-      { icon: 'warning', color: '#f59e0b', text: 'pH at 7.1 is too alkaline — schedule sulfur treatment before Thursday rain.' },
-      { icon: 'info', color: '#38bdf8', text: 'Harvest window in 10 days. Pre-harvest scouting recommended for late blight.' },
-      { icon: 'check-circle', color: '#4ade80', text: 'Tuber development excellent. AI estimates yield of 28t/ha based on current biomass readings.' },
+      { icon: 'warning', color: '#f59e0b', text: 'pH is at 7.1, which is too alkaline. Add sulfur to the soil before Thursday\'s rain.' },
+      { icon: 'info', color: '#38bdf8', text: 'Harvest window opens in 10 days. Inspect the field for late blight symptoms before harvesting.' },
+      { icon: 'warning', color: '#ef4444', text: 'Upcoming rain risks waterlogging. Pause irrigation and clear drainage channels immediately.' },
     ],
   },
 } as const;
@@ -165,10 +153,13 @@ const FIELD_DATA = {
 type FieldKey = keyof typeof FIELD_DATA;
 
 // ── Interactive metric card ───────────────────────────────────
-const MetricCard = ({ metric, label }: {
-  metric: typeof FIELD_DATA['Field 1']['metrics']['moisture'];
-  label: string;
-}) => {
+interface MetricShape {
+  value: string; raw: number; unit: string;
+  optimal: string; trend: string;
+  icon: string; color: string;
+  context: string;
+}
+const MetricCard = ({ metric, label }: { metric: MetricShape; label: string }) => {
   const theme = useThemeColors();
   const [expanded, setExpanded] = useState(false);
   const anim = useRef(new Animated.Value(0)).current;
@@ -220,9 +211,6 @@ const MetricCard = ({ metric, label }: {
               <Text style={{ fontFamily: 'Outfit_700Bold', fontSize: 11, color: metric.color }}>{metric.optimal}</Text>
             </View>
             <Text style={{ fontFamily: 'Outfit_400Regular', fontSize: 11, color: theme.textSub, lineHeight: 16 }}>{metric.context}</Text>
-            <View style={{ backgroundColor: metric.color + '15', borderRadius: 8, padding: 8, marginTop: 4 }}>
-              <Text style={{ fontFamily: 'Outfit_600SemiBold', fontSize: 11, color: metric.color }}>💡 {metric.recommendation}</Text>
-            </View>
           </View>
         </Animated.View>
       </View>
@@ -305,13 +293,15 @@ export default function FieldsScreen() {
   };
 
   const screenWidth = Dimensions.get('window').width;
-  const chartWidth = Math.min(screenWidth, 700) - 88;
+  // 48 = scrollContent paddingH×2, 40 = glassContent padding×2, 32 = chartContainer padding×2
+  const chartWidth = Math.min(screenWidth, 700) - 120;
   const chartHeight = 160;
   const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
-  const interval = chartWidth / 6;
+  const INSET = 8; // horizontal breathing room so edge circles aren't clipped
+  const interval = (chartWidth - INSET * 2) / 6;
   const points = currentData.points.map((p, i) => ({
-    x: interval * i, y: chartHeight - (p / 65) * chartHeight, val: p, day: days[i],
+    x: INSET + interval * i, y: chartHeight - (p / 65) * chartHeight, val: p, day: days[i],
   }));
 
   const pathString = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
@@ -432,6 +422,8 @@ export default function FieldsScreen() {
             <Text style={[styles.statusText, { color: statusColor }]}>{displayStatus}</Text>
           </View>
         </View>
+
+
 
         {/* Crop Lifecycle */}
         <View style={[styles.glassCard]}>
@@ -555,7 +547,7 @@ export default function FieldsScreen() {
             {/* Metric cards grid — tap/hover for full context */}
             <Text style={[styles.sectionTitle, { marginBottom: 14 }]}>Live Sensor Readings</Text>
             <Text style={{ fontFamily: 'Outfit_400Regular', fontSize: 12, color: theme.textDim, marginBottom: 16, marginTop: -8 }}>
-              Tap or hover any card to see full context, optimal range and AI recommendation.
+              Tap or hover any card to see full context and optimal range.
             </Text>
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12, marginBottom: 20 }}>
               <MetricCard metric={currentData.metrics.moisture} label="Soil Moisture" />
@@ -587,30 +579,7 @@ export default function FieldsScreen() {
           </View>
         </View>
 
-        {/* AI Field Advisories */}
-        <View style={styles.glassCard}>
-          <BlurView intensity={theme.isDark ? 40 : 70} tint={theme.blurTint} style={StyleSheet.absoluteFill} />
-          <View style={styles.glassContent}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 16 }}>
-              <View style={{ width: 34, height: 34, borderRadius: 17, backgroundColor: SOIL_BROWN + '20', alignItems: 'center', justifyContent: 'center' }}>
-                <MaterialIcons name="auto-awesome" size={16} color={SOIL_BROWN} />
-              </View>
-              <Text style={{ fontFamily: 'Outfit_700Bold', fontSize: 15, color: theme.textMain }}>AI Field Advisories</Text>
-            </View>
-            {currentData.aiAdvisories.map((adv, i) => (
-              <View key={i} style={{
-                flexDirection: 'row', gap: 12, paddingVertical: 12,
-                borderBottomWidth: i < currentData.aiAdvisories.length - 1 ? 1 : 0,
-                borderBottomColor: theme.glassBorder,
-              }}>
-                <View style={{ width: 26, height: 26, borderRadius: 13, backgroundColor: adv.color + '20', alignItems: 'center', justifyContent: 'center', marginTop: 1 }}>
-                  <MaterialIcons name={adv.icon as any} size={13} color={adv.color} />
-                </View>
-                <Text style={{ flex: 1, fontFamily: 'Outfit_500Medium', fontSize: 13, color: theme.textSub, lineHeight: 19 }}>{adv.text}</Text>
-              </View>
-            ))}
-          </View>
-        </View>
+
 
       </ScrollView>
     </LinearGradient>

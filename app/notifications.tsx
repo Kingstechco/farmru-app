@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Platform, TouchableOpacity, Pressable } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Platform, TouchableOpacity, Pressable, LayoutAnimation } from 'react-native';
+import { LinearGradient as FadeGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useThemeColors } from '@/hooks/useThemeColors';
 import { AppIcon as MaterialIcons } from '@/components/ui/AppIcon';
@@ -44,6 +45,7 @@ export default function NotificationsScreen() {
   const router = useRouter();
   const [notifications, setNotifications] = useState<Notif[]>(INITIAL_NOTIFICATIONS);
   const [activeFilter, setActiveFilter] = useState('all');
+  const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const unreadCount = notifications.filter(n => !n.read).length;
 
@@ -59,35 +61,46 @@ export default function NotificationsScreen() {
   const yesterday = filtered.filter(n => n.time === 'Yesterday');
   const older = filtered.filter(n => ['2 days ago', '3 days ago'].includes(n.time));
 
-  const NotifItem = ({ notif }: { notif: Notif }) => (
-    <Pressable
-      onPress={() => markRead(notif.id)}
-      style={({ pressed }) => [styles.notifCard, {
-        backgroundColor: pressed
-          ? notif.color + '10'
-          : notif.read ? theme.glassBackground : theme.glassBackgroundStrong,
-        borderColor: notif.read ? theme.glassBorder : notif.color + '35',
-        transform: [{ scale: pressed ? 0.985 : 1 }],
-      }]}
-    >
-      <BlurView intensity={theme.isDark ? 25 : 60} tint={theme.blurTint} style={StyleSheet.absoluteFill} />
-      <View style={[styles.notifIconBox, { backgroundColor: notif.color + '18' }]}>
-        <MaterialIcons name={notif.icon as any} size={20} color={notif.color} />
-      </View>
-      <View style={{ flex: 1, gap: 3 }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Text style={[styles.notifTitle, { color: theme.textMain }]} numberOfLines={1}>
-            {notif.title}
-          </Text>
-          {!notif.read && <View style={[styles.unreadDot, { backgroundColor: notif.color }]} />}
+  const NotifItem = ({ notif }: { notif: Notif }) => {
+    const isExpanded = expandedId === notif.id;
+
+    return (
+      <Pressable
+        onPress={() => {
+          markRead(notif.id);
+          LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+          setExpandedId(isExpanded ? null : notif.id);
+        }}
+        style={({ pressed }) => [styles.notifCard, {
+          backgroundColor: pressed
+            ? notif.color + '10'
+            : notif.read ? theme.glassBackground : theme.glassBackgroundStrong,
+          borderColor: notif.read ? theme.glassBorder : notif.color + '35',
+          transform: [{ scale: pressed ? 0.985 : 1 }],
+        }]}
+      >
+        <BlurView intensity={theme.isDark ? 25 : 60} tint={theme.blurTint} style={StyleSheet.absoluteFill} />
+        <View style={[styles.notifIconBox, { backgroundColor: notif.color + '18' }]}>
+          <MaterialIcons name={notif.icon as any} size={20} color={notif.color} />
         </View>
-        <Text style={[styles.notifBody, { color: theme.textSub }]} numberOfLines={2}>
-          {notif.body}
-        </Text>
-        <Text style={[styles.notifTime, { color: theme.textDim }]}>{notif.time}</Text>
-      </View>
-    </Pressable>
-  );
+        <View style={{ flex: 1, gap: 3 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Text style={[styles.notifTitle, { color: theme.textMain }]} numberOfLines={1}>
+              {notif.title}
+            </Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+              {!notif.read && <View style={[styles.unreadDot, { backgroundColor: notif.color }]} />}
+              <MaterialIcons name={isExpanded ? 'expand-less' : 'expand-more'} size={18} color={theme.textDim} />
+            </View>
+          </View>
+          <Text style={[styles.notifBody, { color: theme.textSub }]} numberOfLines={isExpanded ? undefined : 2}>
+            {notif.body}
+          </Text>
+          <Text style={[styles.notifTime, { color: theme.textDim, marginTop: isExpanded ? 6 : 0 }]}>{notif.time}</Text>
+        </View>
+      </Pressable>
+    );
+  };
 
   const GroupHeader = ({ label }: { label: string }) => (
     <Text style={[styles.groupLabel, { color: theme.textDim }]}>{label}</Text>
@@ -123,24 +136,36 @@ export default function NotificationsScreen() {
       </View>
 
       {/* Filter chips */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ maxHeight: 52, marginBottom: 4 }} contentContainerStyle={{ paddingHorizontal: 20, gap: 8, alignItems: 'center' }}>
-        {CATEGORY_FILTERS.map(f => (
-          <Pressable
-            key={f.key}
-            onPress={() => setActiveFilter(f.key)}
-            style={({ pressed }) => ({
-              flexDirection: 'row', alignItems: 'center', gap: 5,
-              paddingHorizontal: 13, paddingVertical: 7, borderRadius: 20,
-              backgroundColor: activeFilter === f.key ? theme.soilBrown + '25' : theme.glassBackground,
-              borderWidth: 1.5, borderColor: activeFilter === f.key ? theme.soilBrown + '60' : theme.glassBorder,
-              transform: [{ scale: pressed ? 0.95 : 1 }],
-            })}
-          >
-            <MaterialIcons name={f.icon as any} size={13} color={activeFilter === f.key ? theme.soilBrown : theme.textDim} />
-            <Text style={{ fontFamily: 'Outfit_600SemiBold', fontSize: 12, color: activeFilter === f.key ? theme.soilBrown : theme.textSub }}>{f.label}</Text>
-          </Pressable>
-        ))}
-      </ScrollView>
+      <View style={{ height: 44, marginBottom: 6 }}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ paddingLeft: 20, paddingRight: 32, gap: 7, alignItems: 'center', height: 44 }}
+        >
+          {CATEGORY_FILTERS.map(f => (
+            <Pressable
+              key={f.key}
+              onPress={() => setActiveFilter(f.key)}
+              style={({ pressed }) => ({
+                flexDirection: 'row', alignItems: 'center', gap: 4,
+                paddingHorizontal: 11, paddingVertical: 5, borderRadius: 20,
+                backgroundColor: activeFilter === f.key ? theme.soilBrown + '25' : theme.glassBackground,
+                borderWidth: 1.5, borderColor: activeFilter === f.key ? theme.soilBrown + '60' : theme.glassBorder,
+                transform: [{ scale: pressed ? 0.95 : 1 }],
+              })}
+            >
+              <MaterialIcons name={f.icon as any} size={12} color={activeFilter === f.key ? theme.soilBrown : theme.textDim} />
+              <Text style={{ fontFamily: 'Outfit_600SemiBold', fontSize: 12, color: activeFilter === f.key ? theme.soilBrown : theme.textSub }}>{f.label}</Text>
+            </Pressable>
+          ))}
+        </ScrollView>
+        {/* Right-side fade to hint there are more chips */}
+        <FadeGradient
+          colors={['transparent', theme.bgGradientEnd]}
+          start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
+          style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: 32, pointerEvents: 'none' }}
+        />
+      </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         {today.length > 0 && <>

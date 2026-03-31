@@ -9,9 +9,9 @@ import { useRouter, Stack } from 'expo-router';
 
 const ACTIVITY_DATA = [
   { id: 1, title: 'Irrigation System Activated', subtitle: 'Plot 2 Matrix', time: '10 mins ago', icon: 'water-drop', color: '#38bdf8' },
-  { id: 2, title: 'Phosphorus Applied', subtitle: 'Targeted replenishment complete', time: '2 hours ago', icon: 'local-florist', color: '#f59e0b' },
+  { id: 2, title: 'Phosphorus Applied', subtitle: 'Applied to Maize Plot B', time: '2 hours ago', icon: 'local-florist', color: '#f59e0b' },
   { id: 3, title: 'Soil Sensor Node Offline', subtitle: 'Check power supply on Node 4', time: 'Yesterday', icon: 'warning', color: '#ef4444' },
-  { id: 4, title: 'Yield Projection Updated', subtitle: 'AI analysis: +4% trajectory', time: 'Monday', icon: 'trending-up', color: '#22c55e' },
+  { id: 4, title: 'Yield Projection Updated', subtitle: 'Crop yield expected to increase by 4%', time: 'Monday', icon: 'trending-up', color: '#22c55e' },
   { id: 5, title: 'Battery Replaced', subtitle: 'Main pump station', time: 'Sunday', icon: 'battery-full', color: '#f59e0b' },
 ];
 
@@ -79,7 +79,7 @@ export default function ActivityLogScreen() {
         </View>
         
         <Text style={styles.aiHelperText}>
-          Need insights? Query the log below and Farmru AI will deeply analyze the historical metrics against your yield prediction goals.
+          Need help? Ask Farmru AI to review your past activities and give you simple advice.
         </Text>
 
       </ScrollView>
