@@ -13,6 +13,7 @@ import {
   ImageBackground
 } from 'react-native';
 import { BlurView } from 'expo-blur';
+import { LinearGradient } from 'expo-linear-gradient';
 import { AppIcon as MaterialIcons } from './ui/AppIcon';
 import { useThemeColors } from '@/hooks/useThemeColors';
 import { store } from '@/utils/store';
@@ -124,10 +125,17 @@ export const SoilAnalysisModal = ({ visible, onClose }: SoilAnalysisModalProps) 
           <BlurView intensity={theme.isDark ? 90 : 95} tint={theme.blurTint} style={StyleSheet.absoluteFill} />
           
           <View style={styles.header}>
-            <Text style={styles.title}>Soil Analysis Hub</Text>
-            <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
+            <TouchableOpacity onPress={onClose} style={styles.closeBtnAbsolute}>
               <MaterialIcons name="close" size={20} color={theme.textSub} />
             </TouchableOpacity>
+
+            <View style={styles.heroColumn}>
+              <View style={styles.heroIconContainer}>
+                <View style={[StyleSheet.absoluteFill, { backgroundColor: theme.tintGreen, opacity: 0.1, borderRadius: 36 }]} />
+                <MaterialIcons name="science" size={32} color={theme.tintGreen} />
+              </View>
+              <Text style={styles.title}>Soil Analysis Hub</Text>
+            </View>
           </View>
 
           {mode === 'select' && (
@@ -160,11 +168,6 @@ export const SoilAnalysisModal = ({ visible, onClose }: SoilAnalysisModalProps) 
 
           {mode === 'iot' && (
             <View style={styles.scanBody}>
-               <ImageBackground
-                 source={require('../assets/images/farmru_soil.webp')}
-                 style={StyleSheet.absoluteFill}
-                 imageStyle={{ opacity: 0.12, resizeMode: 'cover', borderRadius: 24 }}
-               />
                <View style={styles.scanAnimationBox}>
                  <ActivityIndicator size="large" color={theme.tintGreen} />
                  <Text style={[styles.scanText, { marginTop: 24 }]}>
@@ -234,12 +237,7 @@ export const SoilAnalysisModal = ({ visible, onClose }: SoilAnalysisModalProps) 
           )}
 
           {mode === 'success' && (
-            <View style={{ paddingVertical: 40, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-              <ImageBackground
-                source={require('../assets/images/farmru_soil.png')}
-                style={StyleSheet.absoluteFill}
-                imageStyle={{ opacity: 0.1, resizeMode: 'cover' }}
-              />
+            <View style={{ paddingVertical: 40, alignItems: 'center', justifyContent: 'center' }}>
               <View style={{ width: 80, height: 80, borderRadius: 40, backgroundColor: theme.tintGreen + '20', alignItems: 'center', justifyContent: 'center', marginBottom: 20 }}>
                 <MaterialIcons name="check" size={48} color={theme.tintGreen} />
               </View>
@@ -273,11 +271,39 @@ const getStyles = (theme: any) => StyleSheet.create({
     padding: 24,
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 24,
-    zIndex: 1,
+    marginBottom: 32,
+    marginTop: 8,
+  },
+  heroColumn: {
+    alignItems: 'center',
+    gap: 16,
+  },
+  heroIconContainer: {
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: theme.glassBackground,
+    borderWidth: 1,
+    borderColor: theme.glassBorderStrong,
+    shadowColor: theme.tintGreen,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.2,
+    shadowRadius: 12,
+  },
+  closeBtnAbsolute: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 12,
+    backgroundColor: theme.cardIconBg,
+    zIndex: 10,
   },
   title: {
     fontSize: 20,

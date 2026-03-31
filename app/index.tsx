@@ -42,6 +42,12 @@ export default function LoginScreen() {
         style={styles.fullBg}
         resizeMode="cover"
       >
+        {/* Branded Abstract Overlay */}
+        <ImageBackground
+          source={require('../assets/images/farmru_abstract.webp')}
+          style={StyleSheet.absoluteFill}
+          imageStyle={{ opacity: 0.12, resizeMode: 'cover' }}
+        />
         <ScrollView contentContainerStyle={styles.scrollGrow} bounces={false}>
           
           <View style={styles.spacer} />

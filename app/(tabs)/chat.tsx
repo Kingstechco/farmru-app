@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, Keyboard, Animated, Pressable } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, Keyboard, Animated, Pressable, ImageBackground } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AppIcon as MaterialIcons } from '@/components/ui/AppIcon';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import { useThemeColors } from '@/hooks/useThemeColors';
 import { weatherAdvisories, WEATHER_FORECAST } from '@/utils/weatherEngine';
+import { BrandedHeader } from '@/components/BrandedHeader';
 
 type Message = {
   id: string;
@@ -219,22 +220,36 @@ export default function ChatScreen() {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         enabled={Platform.OS !== 'web'}
       >
-        <View style={[styles.header, { paddingTop: insets.top + 16 }]}>
-          <Text style={styles.headerTitle}>Farmru Assistant</Text>
-          <View style={styles.headerBadge}>
-            <Animated.View style={{ opacity: pulseAnim }}>
-              <MaterialIcons name="auto-awesome" size={16} color={SOIL_BROWN} />
-            </Animated.View>
-            <Text style={styles.headerBadgeText}>AI Active</Text>
-          </View>
-        </View>
+        <BrandedHeader
+          imageVariant="leaf"
+          title="Farmru Assistant"
+          rightSlot={
+            <View style={styles.headerBadge}>
+              <Animated.View style={{ opacity: pulseAnim }}>
+                <MaterialIcons name="auto-awesome" size={16} color={SOIL_BROWN} />
+              </Animated.View>
+              <Text style={styles.headerBadgeText}>AI Active</Text>
+            </View>
+          }
+        />
 
         <ScrollView 
           ref={scrollViewRef}
-          contentContainerStyle={styles.scrollContent} 
+          contentContainerStyle={[styles.scrollContent, messages.length === 0 && { flex: 1, justifyContent: 'center' }]} 
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
+          {messages.length === 0 && (
+            <View style={{ alignItems: 'center', opacity: 0.15, paddingBottom: 40 }}>
+              <ImageBackground
+                source={require('../../assets/images/farmru_abstract.webp')}
+                style={{ width: 180, height: 180 }}
+                imageStyle={{ opacity: 0.4, resizeMode: 'contain' }}
+              />
+              <Text style={{ fontFamily: 'Outfit_700Bold', fontSize: 18, color: theme.textMain, marginTop: 12 }}>Farmru AI Assistant</Text>
+              <Text style={{ fontFamily: 'Outfit_500Medium', fontSize: 13, color: theme.textSub, marginTop: 4 }}>Ask me anything about your farm</Text>
+            </View>
+          )}
           {messages.map((msg) => (
             <View 
               key={msg.id} 

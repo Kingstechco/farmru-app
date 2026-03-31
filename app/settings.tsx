@@ -6,6 +6,7 @@ import { AppIcon as MaterialIcons } from '@/components/ui/AppIcon';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import { useRouter } from 'expo-router';
+import { BrandedHeader } from '@/components/BrandedHeader';
 
 type SettingRow = {
   icon: string;
@@ -103,20 +104,21 @@ export default function SettingsScreen() {
 
   return (
     <LinearGradient colors={[theme.bgGradientStart, theme.bgGradientEnd]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ flex: 1 }}>
-      {/* Header */}
-      <View style={[styles.header, { paddingTop: insets.top + (Platform.OS === 'web' ? 24 : 16) }]}>
-        <View>
-          <Text style={[styles.headerSub, { color: theme.textSub }]}>Preferences</Text>
-          <Text style={[styles.headerTitle, { color: theme.textMain }]}>Settings</Text>
-        </View>
-        <TouchableOpacity 
-          style={styles.closeBtn} 
-          activeOpacity={0.7} 
-          onPress={() => router.back()}
-        >
-          <MaterialIcons name="close" size={26} color={theme.textMain} />
-        </TouchableOpacity>
-      </View>
+      {/* Branded Settings Header */}
+      <BrandedHeader
+        imageVariant="soil"
+        title="Settings"
+        subtitle="Preferences"
+        rightSlot={
+          <TouchableOpacity 
+            style={styles.closeBtn} 
+            activeOpacity={0.7} 
+            onPress={() => router.back()}
+          >
+            <MaterialIcons name="close" size={26} color={theme.textMain} />
+          </TouchableOpacity>
+        }
+      />
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         {/* Profile card */}

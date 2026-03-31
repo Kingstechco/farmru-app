@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Platform, TouchableOpacity, LayoutAnimation } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Platform, TouchableOpacity, LayoutAnimation, ImageBackground } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useThemeColors } from '@/hooks/useThemeColors';
 import { AppIcon as MaterialIcons } from '@/components/ui/AppIcon';
@@ -7,6 +7,7 @@ import { MaterialIcons as ExpoMaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import { useRouter, Stack } from 'expo-router';
+import { BrandedHeader } from '@/components/BrandedHeader';
 
 interface ActionItem {
   id: string;
@@ -66,17 +67,18 @@ export default function ActionCenterScreen() {
     >
       <Stack.Screen options={{ headerShown: false, presentation: 'modal' }} />
       
-      {/* Header */}
-      <View style={[styles.header, { paddingTop: insets.top + (Platform.OS === 'web' ? 24 : 16) }]}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <MaterialIcons name="close" size={24} color={theme.textMain} />
-        </TouchableOpacity>
-        <View>
-          <Text style={styles.headerSubtitle}>Farmru AI Directives</Text>
-          <Text style={styles.headerTitle}>Action Center</Text>
-        </View>
-        <View style={{ width: 44 }} />
-      </View>
+      {/* Branded Action Center Header */}
+      <BrandedHeader
+        imageVariant="leaf"
+        title="Action Center"
+        subtitle="Farmru AI Directives"
+        leftSlot={
+          <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+            <MaterialIcons name="close" size={24} color={theme.textMain} />
+          </TouchableOpacity>
+        }
+        rightSlot={<View style={{ width: 44 }} />}
+      />
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         
@@ -88,6 +90,11 @@ export default function ActionCenterScreen() {
               <View key={action.id} style={styles.actionCardWrapper}>
                 <View style={styles.actionCardBackground}>
                   <LinearGradient colors={[`${action.colorHex}33`, 'transparent']} style={StyleSheet.absoluteFill} start={{x:0, y:0}} end={{x:1, y:1}} />
+                  <ImageBackground
+                    source={require('../assets/images/farmru_leaf.webp')}
+                    style={StyleSheet.absoluteFill}
+                    imageStyle={{ opacity: 0.08, resizeMode: 'cover' }}
+                  />
                 </View>
                 <BlurView intensity={theme.isDark ? 30 : 60} tint={theme.blurTint} style={[StyleSheet.absoluteFill, {borderRadius: 20}]} />
                 <View style={styles.actionCardContent}>

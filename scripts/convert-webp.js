@@ -1,7 +1,7 @@
 const sharp = require('sharp');
 const path = require('path');
 
-const files = ['farmru_leaf', 'farmru_abstract', 'farmru_soil'];
+const files = ['farmru_leaf', 'farmru_abstract', 'farmru_soil', 'farmru_weather_bg', 'farmru_harvest'];
 const dir = path.join(__dirname, '..', 'assets', 'images');
 
 Promise.all(

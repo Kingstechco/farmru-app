@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, Platform,
-  TouchableOpacity, Pressable, Animated, Dimensions
+  TouchableOpacity, Pressable, Animated, Dimensions, ImageBackground
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useThemeColors } from '@/hooks/useThemeColors';
@@ -10,6 +10,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
+import { BrandedHeader } from '@/components/BrandedHeader';
 import Svg, { Circle, Path, Polyline, Defs, LinearGradient as SvgGradient, Stop } from 'react-native-svg';
 
 // ── Sensor node data, grouped by field ───────────────────────
@@ -298,7 +299,12 @@ const NodeCard = ({ node, fieldColor }: { node: NodeType; fieldColor: string }) 
             </View>
 
             {/* Sensor readings */}
-            <View style={{ backgroundColor: theme.isDark ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.35)', borderRadius: 14, padding: 14, marginBottom: 14, borderWidth: 1, borderColor: theme.glassBorder }}>
+            <View style={{ backgroundColor: theme.isDark ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.35)', borderRadius: 14, padding: 14, marginBottom: 14, borderWidth: 1, borderColor: theme.glassBorder, overflow: 'hidden' }}>
+              <ImageBackground
+                source={require('../../assets/images/farmru_abstract.webp')}
+                style={StyleSheet.absoluteFill}
+                imageStyle={{ opacity: 0.1, resizeMode: 'cover' }}
+              />
               <Text style={{ fontFamily: 'Outfit_700Bold', fontSize: 13, color: theme.textMain, marginBottom: 6 }}>Live Readings</Text>
               <ReadingRow label="Soil Moisture"   value={readings.moisture}         unit="%"      icon="water-drop"   color="#38bdf8" />
               <ReadingRow label="Soil Temperature" value={readings.temp !== undefined ? readings.temp : null} unit="°C" icon="thermostat" color="#f87171" />
@@ -396,23 +402,24 @@ export default function DevicesScreen() {
       start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
       style={styles.root}
     >
-      {/* Header */}
-      <View style={[styles.header, { paddingTop: insets.top + (Platform.OS === 'web' ? 24 : 16) }]}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}>
+      {/* Branded Devices Header */}
+      <BrandedHeader
+        imageVariant="abstract"
+        title="Device Center"
+        subtitle="Hardware Status"
+        leftSlot={
           <TouchableOpacity onPress={() => router.push('/menu')} activeOpacity={0.8}>
             <View style={[styles.avatarBoxTop, { backgroundColor: theme.soilBrown }]}>
               <Text style={styles.avatarInitial}>T</Text>
             </View>
           </TouchableOpacity>
-          <View>
-            <Text style={styles.headerSubtitle}>Hardware Status</Text>
-            <Text style={styles.headerTitle}>Device Center</Text>
+        }
+        rightSlot={
+          <View style={{ backgroundColor: onlineNodes === totalNodes ? '#4ade8020' : '#f59e0b20', borderRadius: 14, paddingHorizontal: 12, paddingVertical: 6, borderWidth: 1, borderColor: onlineNodes === totalNodes ? '#4ade8050' : '#f59e0b50' }}>
+            <Text style={{ fontFamily: 'Outfit_700Bold', fontSize: 12, color: onlineNodes === totalNodes ? '#4ade80' : '#f59e0b' }}>{onlineNodes}/{totalNodes} Online</Text>
           </View>
-        </View>
-        <View style={{ backgroundColor: onlineNodes === totalNodes ? '#4ade8020' : '#f59e0b20', borderRadius: 14, paddingHorizontal: 12, paddingVertical: 6, borderWidth: 1, borderColor: onlineNodes === totalNodes ? '#4ade8050' : '#f59e0b50' }}>
-          <Text style={{ fontFamily: 'Outfit_700Bold', fontSize: 12, color: onlineNodes === totalNodes ? '#4ade80' : '#f59e0b' }}>{onlineNodes}/{totalNodes} Online</Text>
-        </View>
-      </View>
+        }
+      />
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
 

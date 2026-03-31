@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ImageBackground } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { AppIcon as MaterialIcons } from './ui/AppIcon';
 import { useThemeColors } from '@/hooks/useThemeColors';
@@ -24,6 +24,11 @@ export const WeatherAdvisoryCard = ({ onOpenDrawer }: WeatherAdvisoryCardProps) 
   return (
     <View style={styles.card}>
       <BlurView intensity={theme.isDark ? 25 : 60} tint={theme.blurTint} style={StyleSheet.absoluteFill} />
+      <ImageBackground
+        source={require('../assets/images/farmru_weather_bg.webp')}
+        style={StyleSheet.absoluteFill}
+        imageStyle={{ opacity: 0.3, resizeMode: 'cover' }}
+      />
 
       {/* Card Header */}
       <View style={styles.header}>

@@ -7,6 +7,7 @@ import { AppIcon as MaterialIcons } from '@/components/ui/AppIcon';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import { useRouter } from 'expo-router';
+import { BrandedHeader } from '@/components/BrandedHeader';
 
 type Notif = {
   id: string;
@@ -108,32 +109,34 @@ export default function NotificationsScreen() {
 
   return (
     <LinearGradient colors={[theme.bgGradientStart, theme.bgGradientEnd]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ flex: 1 }}>
-      {/* Header */}
-      <View style={[styles.header, { paddingTop: insets.top + (Platform.OS === 'web' ? 24 : 16) }]}>
-        <View style={{ flex: 1 }}>
-          <Text style={[styles.headerSub, { color: theme.textSub }]}>Farm Alerts</Text>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-            <Text style={[styles.headerTitle, { color: theme.textMain }]}>Notifications</Text>
+      <BrandedHeader
+        imageVariant="leaf"
+        title="Notifications"
+        subtitle="Farm Alerts"
+        leftSlot={
+          <TouchableOpacity 
+            style={styles.closeBtn} 
+            activeOpacity={0.7} 
+            onPress={() => router.back()}
+          >
+            <MaterialIcons name="close" size={26} color={theme.textMain} />
+          </TouchableOpacity>
+        }
+        rightSlot={
+          <View style={{ alignItems: 'flex-end', gap: 6 }}>
             {unreadCount > 0 && (
               <View style={{ backgroundColor: '#ef4444', borderRadius: 10, paddingHorizontal: 8, paddingVertical: 2 }}>
                 <Text style={{ fontFamily: 'Outfit_700Bold', fontSize: 11, color: '#fff' }}>{unreadCount}</Text>
               </View>
             )}
+            {unreadCount > 0 && (
+              <TouchableOpacity onPress={markAllRead} activeOpacity={0.7}>
+                <Text style={{ fontFamily: 'Outfit_600SemiBold', fontSize: 13, color: theme.tintGreen }}>Mark all read</Text>
+              </TouchableOpacity>
+            )}
           </View>
-          {unreadCount > 0 && (
-            <TouchableOpacity onPress={markAllRead} activeOpacity={0.7} style={{ marginTop: 6 }}>
-              <Text style={{ fontFamily: 'Outfit_600SemiBold', fontSize: 13, color: theme.tintGreen }}>Mark all read</Text>
-            </TouchableOpacity>
-          )}
-        </View>
-        <TouchableOpacity 
-          style={styles.closeBtn} 
-          activeOpacity={0.7} 
-          onPress={() => router.back()}
-        >
-          <MaterialIcons name="close" size={26} color={theme.textMain} />
-        </TouchableOpacity>
-      </View>
+        }
+      />
 
       {/* Filter chips */}
       <View style={{ height: 44, marginBottom: 6 }}>

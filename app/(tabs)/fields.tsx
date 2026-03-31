@@ -10,6 +10,7 @@ import { BlurView } from 'expo-blur';
 import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { RefreshControl } from 'react-native';
+import { BrandedHeader } from '@/components/BrandedHeader';
 import Svg, {
   Path, Circle, Defs, LinearGradient as SvgLinearGradient,
   Stop, Polyline, G, Text as SvgText, Line
@@ -323,24 +324,25 @@ export default function FieldsScreen() {
       start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
       style={styles.root}
     >
-      {/* Header */}
-      <View style={[styles.header, { paddingTop: insets.top + (Platform.OS === 'web' ? 24 : 16) }]}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}>
+      {/* Branded Fields Header */}
+      <BrandedHeader
+        imageVariant="leaf"
+        title="All Fields & Nodes"
+        subtitle="Monitor Your Farm"
+        leftSlot={
           <TouchableOpacity onPress={() => router.push('/menu')} activeOpacity={0.8}>
             <View style={[styles.avatarBoxTop, { backgroundColor: SOIL_BROWN }]}>
               <Text style={styles.avatarInitial}>T</Text>
             </View>
           </TouchableOpacity>
-          <View>
-            <Text style={styles.headerSubtitle}>Monitor Your Farm</Text>
-            <Text style={styles.headerTitle}>All Fields & Nodes</Text>
-          </View>
-        </View>
-        <TouchableOpacity style={styles.filterButton} onPress={() => router.push('/filter-modal')}>
-          <BlurView intensity={theme.isDark ? 30 : 60} tint={theme.blurTint} style={StyleSheet.absoluteFill} />
-          <MaterialIcons name="tune" size={20} color={theme.textMain} />
-        </TouchableOpacity>
-      </View>
+        }
+        rightSlot={
+          <TouchableOpacity style={styles.filterButton} onPress={() => router.push('/filter-modal')}>
+            <BlurView intensity={theme.isDark ? 30 : 60} tint={theme.blurTint} style={StyleSheet.absoluteFill} />
+            <MaterialIcons name="tune" size={20} color={theme.textMain} />
+          </TouchableOpacity>
+        }
+      />
 
       <ScrollView
         contentContainerStyle={styles.scrollContent}

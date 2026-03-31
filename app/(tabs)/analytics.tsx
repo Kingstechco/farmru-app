@@ -1,7 +1,7 @@
 import React, { useState, useRef, useCallback } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, Platform, TouchableOpacity,
-  Dimensions, Animated, Pressable
+  Dimensions, Animated, Pressable, ImageBackground
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useThemeColors } from '@/hooks/useThemeColors';
@@ -9,10 +9,11 @@ import { AppIcon as MaterialIcons } from '@/components/ui/AppIcon';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import { useRouter } from 'expo-router';
+import { BrandedHeader } from '@/components/BrandedHeader';
 import Svg, { Rect, Defs, LinearGradient as SvgLinearGradient, Stop, Circle, Line, Text as SvgText } from 'react-native-svg';
 
-// ── Types ────────────────────────────────────────────────────
 type Period = '1H' | '1D' | '7D' | '1M' | '6M' | '1Y';
+type HarvestPeriod = 'Season' | 'Year';
 
 interface BarDatum { label: string; val: number; unit?: string; }
 interface TooltipState { visible: boolean; x: number; y: number; label: string; value: string; }
@@ -167,31 +168,16 @@ const InteractiveBarChart = ({
 };
 
 // ── Per-period data ───────────────────────────────────────────
-const YIELD_DATA: Record<Period, BarDatum[]> = {
-  '1H': [
-    { label: '06:00', val: 0.05 }, { label: '07:00', val: 0.12 }, { label: '08:00', val: 0.18 },
-    { label: '09:00', val: 0.22 }, { label: '10:00', val: 0.28 }, { label: '11:00', val: 0.31 },
-    { label: '12:00', val: 0.25 }, { label: '13:00', val: 0.20 }, { label: '14:00', val: 0.27 },
-    { label: '15:00', val: 0.33 }, { label: '16:00', val: 0.29 }, { label: '17:00', val: 0.15 },
+const YIELD_DATA: Record<HarvestPeriod, BarDatum[]> = {
+  'Season': [
+    { label: '2022 S1', val: 7.2 }, { label: '2022 S2', val: 6.8 }, 
+    { label: '2023 S1', val: 8.5 }, { label: '2023 S2', val: 9.1 },
+    { label: '2024 S1', val: 9.8 }
   ],
-  '1D': [
-    { label: '00h', val: 0.0 }, { label: '03h', val: 0.0 }, { label: '06h', val: 0.08 },
-    { label: '09h', val: 0.28 }, { label: '12h', val: 0.25 }, { label: '15h', val: 0.33 },
-    { label: '18h', val: 0.20 }, { label: '21h', val: 0.05 },
-  ],
-  '7D': [
-    { label: 'Mon', val: 0.4 }, { label: 'Tue', val: 0.6 }, { label: 'Wed', val: 0.8 },
-    { label: 'Thu', val: 0.5 }, { label: 'Fri', val: 1.0 }, { label: 'Sat', val: 0.9 }, { label: 'Sun', val: 1.1 }
-  ],
-  '1M': [
-    { label: 'W1', val: 1.2 }, { label: 'W2', val: 2.0 }, { label: 'W3', val: 1.8 }, { label: 'W4', val: 2.4 }
-  ],
-  '6M': [
-    { label: 'Oct', val: 0.8 }, { label: 'Nov', val: 1.2 }, { label: 'Dec', val: 2.1 },
-    { label: 'Jan', val: 3.5 }, { label: 'Feb', val: 4.2 }, { label: 'Mar', val: 3.8 }
-  ],
-  '1Y': [
-    { label: 'Q1', val: 5.5 }, { label: 'Q2', val: 8.2 }, { label: 'Q3', val: 7.1 }, { label: 'Q4', val: 9.4 }
+  'Year': [
+    { label: '2020', val: 14.5 }, { label: '2021', val: 12.8 }, 
+    { label: '2022', val: 16.2 }, { label: '2023', val: 18.4 },
+    { label: '2024', val: 19.5 }
   ],
 };
 
@@ -273,14 +259,17 @@ const NPKBar = ({ label, value, unit, pct, color, warning }: {
   );
 };
 
-// ── Period Switcher Tabs ─────────────────────────────────────
-const PeriodSwitcher = ({ value, onChange }: { value: Period; onChange: (p: Period) => void }) => {
+// ── Generic Period Switcher Tabs ─────────────────────────────
+const PeriodSwitcher = ({ value, options, onChange }: { 
+  value: string; 
+  options: string[]; 
+  onChange: (p: any) => void 
+}) => {
   const theme = useThemeColors();
-  const periods: Period[] = ['1H', '1D', '7D', '1M', '6M', '1Y'];
   return (
     <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 16 }}>
       <View style={{ flexDirection: 'row', gap: 6 }}>
-        {periods.map(p => (
+        {options.map(p => (
           <TouchableOpacity
             key={p}
             onPress={() => onChange(p)}
@@ -335,7 +324,7 @@ export default function AnalyticsScreen() {
   const router = useRouter();
   const styles = getStyles(theme);
 
-  const [yieldPeriod, setYieldPeriod] = useState<Period>('1D');
+  const [yieldPeriod, setYieldPeriod] = useState<HarvestPeriod>('Season');
   const [waterPeriod, setWaterPeriod] = useState<Period>('1D');
 
   const yieldData = YIELD_DATA[yieldPeriod];
@@ -357,34 +346,40 @@ export default function AnalyticsScreen() {
       start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
       style={styles.root}
     >
-      {/* Header */}
-      <View style={[styles.header, { paddingTop: insets.top + (Platform.OS === 'web' ? 24 : 16) }]}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}>
+      {/* Branded Analytics Header */}
+      <BrandedHeader
+        imageVariant="harvest"
+        title="Analytics"
+        subtitle="Farm Intelligence"
+        leftSlot={
           <TouchableOpacity onPress={() => router.push('/menu')} activeOpacity={0.8}>
             <View style={[styles.avatarBoxTop, { backgroundColor: theme.soilBrown }]}>
               <Text style={styles.avatarInitial}>T</Text>
             </View>
           </TouchableOpacity>
-          <View>
-            <Text style={styles.headerSubtitle}>Farm Intelligence</Text>
-            <Text style={styles.headerTitle}>Analytics</Text>
-          </View>
-        </View>
-        <TouchableOpacity
-          style={{ flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: theme.soilBrown + '20', paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20 }}
-          activeOpacity={0.8}
-          onPress={() => router.push('/action-center')}
-        >
-          <MaterialIcons name="fact-check" size={14} color={theme.soilBrown} />
-          <Text style={{ fontFamily: 'Outfit_700Bold', fontSize: 12, color: theme.soilBrown }}>Action Center</Text>
-        </TouchableOpacity>
-      </View>
+        }
+        rightSlot={
+          <TouchableOpacity
+            style={{ flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: theme.soilBrown + '20', paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20 }}
+            activeOpacity={0.8}
+            onPress={() => router.push('/action-center')}
+          >
+            <MaterialIcons name="fact-check" size={14} color={theme.soilBrown} />
+            <Text style={{ fontFamily: 'Outfit_700Bold', fontSize: 12, color: theme.soilBrown }}>Action Center</Text>
+          </TouchableOpacity>
+        }
+      />
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
 
         {/* Hero: Farm Vitality Score */}
         <View style={styles.heroCard}>
           <BlurView intensity={theme.isDark ? 40 : 80} tint={theme.blurTint} style={StyleSheet.absoluteFill} />
+          <ImageBackground
+            source={require('../../assets/images/farmru_leaf.webp')}
+            style={StyleSheet.absoluteFill}
+            imageStyle={{ opacity: 0.15, resizeMode: 'cover' }}
+          />
           <View style={styles.heroContent}>
             <View style={{ flex: 1, paddingRight: 16 }}>
               <Text style={styles.heroTitle}>Farm Vitality Score</Text>
@@ -418,7 +413,7 @@ export default function AnalyticsScreen() {
 
         {/* Quick Insight Row */}
         <View style={{ flexDirection: 'row', gap: 12, marginBottom: 28 }}>
-          <InsightChip icon="eco" label="Avg Daily Yield" value="1.2t/ha" color={theme.tintGreen} />
+          <InsightChip icon="eco" label="Avg Seasonal Yield" value="8.5t/ha" color={theme.tintGreen} />
           <InsightChip icon="water-drop" label="Water Saved" value="40L" color="#38bdf8" />
           <InsightChip icon="thermostat" label="Soil Temp" value="22°C" color={theme.soilBrown} />
         </View>
@@ -435,8 +430,17 @@ export default function AnalyticsScreen() {
 
         <View style={styles.glassCard}>
           <BlurView intensity={theme.isDark ? 40 : 70} tint={theme.blurTint} style={StyleSheet.absoluteFill} />
+          <ImageBackground
+            source={require('../../assets/images/farmru_harvest.webp')}
+            style={StyleSheet.absoluteFill}
+            imageStyle={{ opacity: 0.15, resizeMode: 'cover' }}
+          />
           <View style={styles.glassContent}>
-            <PeriodSwitcher value={yieldPeriod} onChange={setYieldPeriod} />
+            <PeriodSwitcher 
+              value={yieldPeriod} 
+              options={['Season', 'Year']} 
+              onChange={setYieldPeriod} 
+            />
             <InteractiveBarChart
               data={yieldData}
               maxVal={yieldMax}
@@ -473,6 +477,11 @@ export default function AnalyticsScreen() {
         <View style={styles.glassCard}>
           <BlurView intensity={theme.isDark ? 40 : 70} tint={theme.blurTint} style={StyleSheet.absoluteFill} />
           <View style={styles.glassContent}>
+            <PeriodSwitcher 
+              value={waterPeriod} 
+              options={['1H', '1D', '7D', '1M', '6M', '1Y']} 
+              onChange={setWaterPeriod} 
+            />
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
               <View>
                 <Text style={{ color: theme.textSub, fontFamily: 'Outfit_500Medium', fontSize: 13, marginBottom: 4 }}>
@@ -489,7 +498,6 @@ export default function AnalyticsScreen() {
                 </View>
               </View>
             </View>
-            <PeriodSwitcher value={waterPeriod} onChange={setWaterPeriod} />
             <InteractiveBarChart
               data={waterData}
               maxVal={waterMax}

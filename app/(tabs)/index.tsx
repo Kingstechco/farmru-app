@@ -8,6 +8,7 @@ import { useRouter } from 'expo-router';
 import { useThemeColors } from '@/hooks/useThemeColors';
 import { store, Activity, SoilData } from '@/utils/store';
 import { WeatherAdvisoryCard } from '@/components/WeatherAdvisoryCard';
+import { BrandedHeader } from '@/components/BrandedHeader';
 // Transitions handled at tab navigator level via animation:'fade'
 import { 
   WEATHER_FORECAST, 
@@ -112,6 +113,12 @@ const InteractiveKPICard = (p: KPICardProps) => {
 
           {/* Visible content */}
           <View style={{ paddingHorizontal: 16, paddingBottom: 14, gap: 6 }}>
+            {/* Branded Watermark */}
+            <ImageBackground
+              source={require('../../assets/images/farmru_leaf.webp')}
+              style={{ position: 'absolute', right: -20, top: -20, width: 100, height: 100 }}
+              imageStyle={{ opacity: 0.05, transform: [{ rotate: '15deg' }] }}
+            />
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
               <Text style={{ fontFamily: 'Outfit_500Medium', fontSize: 11, color: theme.textDim }}>Optimal Range</Text>
               <Text style={{ fontFamily: 'Outfit_700Bold', fontSize: 11, color: p.iconColor }}>{p.optimalRange}</Text>
@@ -155,64 +162,50 @@ export default function DashboardScreen() {
       end={{ x: 1, y: 1 }}
       style={styles.root}
     >
-      <View style={{ paddingTop: insets.top, flex: 1 }}>
-        
-        {/* ── Hero header with leaf image confined strictly to header ── */}
-        <ImageBackground
-          source={require('../../assets/images/farmru_leaf.webp')}
-          style={[styles.header, {
-            paddingTop: Platform.OS === 'web' ? 20 : 12,
-            overflow: 'hidden',
-          }]}
-          imageStyle={{ opacity: theme.isDark ? 0.28 : 0.18, resizeMode: 'cover' }}
-        >
-          {/* Gradient fade across the whole header bottom edge */}
-          <LinearGradient
-            colors={['transparent', theme.bgGradientStart]}
-            style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 40 }}
-          />
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}>
+        {/* Branded Dashboard Header */}
+        <BrandedHeader
+          imageVariant="leaf"
+          title={`Tsedzu \🌿`}
+          subtitle="Good Morning,"
+          leftSlot={
             <TouchableOpacity onPress={() => router.push('/menu')} activeOpacity={0.8}>
               <View style={[styles.avatarBoxTop, { backgroundColor: SOIL_BROWN }]}>
                 <Text style={styles.avatarInitial}>T</Text>
               </View>
             </TouchableOpacity>
-            <View>
-              <Text style={styles.greetingHeader}>Good Morning,</Text>
-              <Text style={styles.farmerName}>Tsedzu <Text style={{fontSize: 22}}>🌿</Text></Text>
+          }
+          rightSlot={
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+              {/* Notifications Button */}
+              <TouchableOpacity
+                style={[styles.headerIconButton, { backgroundColor: theme.isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)' }]}
+                activeOpacity={0.7}
+                onPress={() => router.push('/notifications')}
+              >
+                <MaterialIcons name="notifications-none" size={24} color={theme.textMain} />
+                <View style={styles.notificationBadge} />
+              </TouchableOpacity>
+
+              {/* Settings Button */}
+              <TouchableOpacity
+                style={[styles.headerIconButton, { backgroundColor: theme.isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)' }]}
+                activeOpacity={0.7}
+                onPress={() => router.push('/settings')}
+              >
+                <MaterialIcons name="settings" size={22} color={theme.textMain} />
+              </TouchableOpacity>
+
+              {/* Weather Badge */}
+              <TouchableOpacity
+                style={[styles.headerIconButton, { backgroundColor: theme.isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)' }]}
+                activeOpacity={0.7}
+                onPress={() => setIsWeatherOpen(true)}
+              >
+                <MaterialIcons name="wb-sunny" size={24} color={SOIL_BROWN} />
+              </TouchableOpacity>
             </View>
-          </View>
-          
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-            {/* Notifications Button */}
-            <TouchableOpacity 
-              style={[styles.headerIconButton, { backgroundColor: theme.isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)' }]} 
-              activeOpacity={0.7} 
-              onPress={() => router.push('/notifications')}
-            >
-              <MaterialIcons name="notifications-none" size={24} color={theme.textMain} />
-              <View style={styles.notificationBadge} />
-            </TouchableOpacity>
-
-            {/* Settings Button */}
-            <TouchableOpacity 
-              style={[styles.headerIconButton, { backgroundColor: theme.isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)' }]} 
-              activeOpacity={0.7} 
-              onPress={() => router.push('/settings')}
-            >
-              <MaterialIcons name="settings" size={22} color={theme.textMain} />
-            </TouchableOpacity>
-
-            {/* Weather Badge */}
-            <TouchableOpacity 
-              style={[styles.headerIconButton, { backgroundColor: theme.isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)' }]} 
-              activeOpacity={0.7} 
-              onPress={() => setIsWeatherOpen(true)}
-            >
-              <MaterialIcons name="wb-sunny" size={24} color={SOIL_BROWN} />
-            </TouchableOpacity>
-          </View>
-        </ImageBackground>
+          }
+        />
 
         <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
 
@@ -271,6 +264,11 @@ export default function DashboardScreen() {
           {/* Soil Vitality Card */}
           <Text style={styles.sectionTitle}>Soil Vitality</Text>
           <GlassCard style={styles.soilCard}>
+            <ImageBackground
+              source={require('../../assets/images/farmru_soil.webp')}
+              style={StyleSheet.absoluteFill}
+              imageStyle={{ opacity: 0.15, resizeMode: 'cover' }}
+            />
             <View style={styles.soilCardHeader}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                 <MaterialIcons name="science" size={20} color={theme.soilBrown} />
@@ -484,7 +482,6 @@ export default function DashboardScreen() {
             </View>
           </View>
         </Modal>
-      </View>
     </LinearGradient>
   );
 }

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Platform, TouchableOpacity, TextInput, KeyboardAvoidingView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Platform, TouchableOpacity, TextInput, KeyboardAvoidingView, ImageBackground } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useThemeColors } from '@/hooks/useThemeColors';
 import { AppIcon as MaterialIcons } from '@/components/ui/AppIcon';
@@ -55,6 +55,11 @@ export default function ActivityLogScreen() {
         
         <View style={styles.glassCard}>
           <BlurView intensity={theme.isDark ? 40 : 70} tint={theme.blurTint} style={StyleSheet.absoluteFill} />
+          <ImageBackground
+            source={require('../assets/images/farmru_abstract.webp')}
+            style={StyleSheet.absoluteFill}
+            imageStyle={{ opacity: 0.1, resizeMode: 'cover' }}
+          />
           <View style={styles.glassContent}>
             {ACTIVITY_DATA.map((item, index) => (
               <View 
